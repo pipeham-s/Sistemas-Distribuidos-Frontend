@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logoImage from "../images/logo_serviHogar.png";
+import logoImage from "../images/logo verde.png";
 import Button from "../components/Button";
 import { UserContext } from "../context/UserContext";
 
