@@ -7,7 +7,7 @@ function App() {
 
     useEffect(() => {
         // Realiza la solicitud al backend
-        axios.get('http://localhost:8080/api/tests') // Cambia esta URL si tu backend está en otro puerto
+        axios.get('http://localhost:8080/api/test') // Cambia esta URL si tu backend está en otro puerto
             .then((response) => {
                 console.log('Respuesta exitosa del servidor:', response.data);
                 setData(response.data); // Guarda la respuesta en el estado
