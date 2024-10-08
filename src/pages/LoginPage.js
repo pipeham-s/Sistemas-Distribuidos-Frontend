@@ -41,9 +41,9 @@ const LoginPage = () => {
   return (
     <PageContainer>
       <Header /> {/* Renderiza el header solo una vez */}
-        <LoginBox>
+    
             <Login />
-        </LoginBox>
+      
     </PageContainer>
   );
 };
