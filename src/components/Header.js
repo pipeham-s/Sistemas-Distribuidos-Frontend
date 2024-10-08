@@ -1,95 +1,50 @@
-import React, { useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import logoImage from "../images/logo verde.png";
-import Button from "../components/Button";
-import { UserContext } from "../context/UserContext";
+import React from 'react';
+import styled from 'styled-components';
+import logo from '../images/logo verde.png'; // Asegúrate de que la ruta del logo sea correcta
 
-function Header({ showBackButton, page }) {
-  const navigate = useNavigate();
-  const { isAuthenticated, logout } = useContext(UserContext);
-  const location = useLocation();
-  const currentPage = location.pathname.replace("/", "")
+// Definir el contenedor principal del Header
+const HeaderContainer = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alineación de los elementos a la izquierda */
+  background-color: #82c9b1; /* Color de fondo */
+  padding: 0; /* Elimina cualquier padding adicional */
+  margin: 0; /* Elimina cualquier margen adicional */
+  height: 80px; /* Ajusta la altura del header */
+  width: 100%; /* Asegúrate de que ocupe todo el ancho */
+  position: fixed; /* Fija el header en la parte superior */
+  top: 0; /* Asegura que el header esté alineado con la parte superior */
+  left: 0; /* Alinea el header con el borde izquierdo */
+  z-index: 100; /* Asegura que el header esté por encima del contenido */
+`;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/"); //redirigir al home
-  };
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding-left: 1rem; /* Espacio entre el borde y el logo */
+`;
 
-  const renderButton = () => {
-    if (isAuthenticated) {
-      // Always show "Cerrar Sesión" button when authenticated
-      return (
-        <div className="flex space-x-4">
-          {/* Show "Mi Perfil" unless on the /demandante page */}
-          {currentPage !== "demandante" && (
-            <Button type="darkBlue" onClick={() => navigate("/demandante")}>
-              Mi Perfil
-            </Button>
-          )}
-          <Button type="darkBlue" onClick={handleLogout}>
-            Cerrar Sesión
-          </Button>
-        </div>
-      );
-    } else {
-      // Show other buttons based on the page if not authenticated
-      switch (currentPage) {
-        case "register":
-          return (
-            <Button type="darkBlue" onClick={() => navigate("/register")}>
-              Registrarse
-            </Button>
-          );
-        case "login":
-          return (
-            <Button type="darkBlue" onClick={() => navigate("/login")}>
-              Iniciar sesión
-            </Button>
-          );
-        case "home":
-          return (
-            <Button type="darkBlue" onClick={() => navigate("/login")}>
-              Registrarse/Entrar
-            </Button>
-          );
-        default:
-          return (
-            <Button type="darkBlue" onClick={() => navigate("/login")}>
-              Iniciar sesión
-            </Button>
-          );
-      }
-    }
-  };
-  
+const Logo = styled.img`
+  height: 50px; /* Ajusta la altura del logo */
+  width: auto;
+  margin-right: 1rem;
+`;
 
+const Title = styled.h1`
+  font-size: 1.8rem;
+  color: white;
+  font-weight: bold;
+  margin: 0;
+`;
+
+const Header = () => {
   return (
-    <header className="bg-white w-full p-4 shadow-md">
-      <div className="flex items-center overflow-x-auto no-scrollbar">
-        {/* Logo y Título clicable que llevan a la página de inicio */}
-        <Link to="/" className="flex items-center space-x-3 mr-20">
-          <img src={logoImage} alt="Logo" className="h-12 w-12" />
-          <span className="text-2xl font-bold text-gray-800">ServiHogar</span>
-        </Link>
-
-        {/* Menú con elementos que se mantendrán en una línea */}
-        <div className="ml-auto flex space-x-6 whitespace-nowrap">
-          {showBackButton && (
-            <a href="#back" className="text-gray-800 hover:text-gray-600">
-              Atrás
-            </a>
-          )}
-          <a href="#contact" className="text-gray-800 hover:text-gray-600">
-            Contáctanos
-          </a>
-          <a href="#about" className="text-gray-800 hover:text-gray-600">
-            Quiénes somos
-          </a>
-          {renderButton()}
-        </div>
-      </div>
-    </header>
+    <HeaderContainer>
+      <LogoContainer>
+        <Logo src={logo} alt="Logo" /> {/* Asegúrate de que solo haya un logo aquí */}
+              </LogoContainer>
+    </HeaderContainer>
   );
-}
+};
 
 export default Header;

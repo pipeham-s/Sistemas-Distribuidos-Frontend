@@ -1,30 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage'; // Importa la página de login
 
 function App() {
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        // Realiza la solicitud al backend
-        axios.get('http://localhost:8080/api/test') // Cambia esta URL si tu backend está en otro puerto
-            .then((response) => {
-                console.log('Respuesta exitosa del servidor:', response.data);
-                setData(response.data); // Guarda la respuesta en el estado
-            })
-            .catch((error) => {
-                console.error('Error en el fetch:', error);
-                setError(error.message); // Guarda el mensaje de error en el estado
-            });
-    }, []);
-
     return (
-        <div>
-            <h1>Conexión Backend-Frontend</h1>
-            {data ? <p>Respuesta del servidor: {data.message}</p> : <p>Cargando...</p>}
-            {error && <p>Error: {error}</p>}
-        </div>
+        <Router>
+            <div>
+                <Routes>
+                    {/* Ruta para el login */}
+                    <Route path="/login" element={<LoginPage />} />
+
+                    {/* Redireccionar a /login si la ruta no coincide */}
+                    <Route path="/" element={<Navigate to="/login" />} />
+
+                    {/* Ruta para manejar páginas no encontradas (404) */}
+                    <Route path="*" element={<h2>404 - Página no encontrada</h2>} />
+                </Routes>
+            </div>
+        </Router>
     );
 }
 
 export default App;
+
+
+
