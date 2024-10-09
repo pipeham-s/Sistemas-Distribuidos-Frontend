@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage'; // Importa la página de login
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
     return (
@@ -9,6 +10,9 @@ function App() {
                 <Routes>
                     {/* Ruta para el login */}
                     <Route path="/login" element={<LoginPage />} />
+
+                    {/*ruta para register*/}
+                    <Route path="/register" element={<RegisterPage />} />
 
                     {/* Redireccionar a /login si la ruta no coincide */}
                     <Route path="/" element={<Navigate to="/login" />} />
