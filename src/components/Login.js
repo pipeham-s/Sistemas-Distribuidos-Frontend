@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom'; // Importar Link desde react-router-dom
 
 // Contenedor principal del Login con estilo traslúcido
 const LoginContainer = styled.div`
@@ -25,8 +26,8 @@ const LinksContainer = styled.div`
   margin-top: 1rem; /* Espacio entre los links y el botón */
 `;
 
-// Estilo para cada link individual
-const Link = styled.a`
+// Estilo para cada link individual - cambiamos el nombre a StyledLink
+const StyledLink = styled(Link)` // Usamos Link desde react-router-dom
   color: #6C3B2A;
   cursor: pointer;
   text-decoration: none;
@@ -72,8 +73,9 @@ const Login = () => {
 
       {/* Contenedor para los links */}
       <LinksContainer>
-        <Link href="#">Crear una cuenta</Link>
-        <Link href="#">Olvidé mi contraseña</Link>
+        {/* Cambia href="#" por "to="/register"" y utiliza StyledLink */}
+        <StyledLink to="/register">Crear una cuenta</StyledLink>
+        <StyledLink to="#">Olvidé mi contraseña</StyledLink>
       </LinksContainer>
     </LoginContainer>
   );

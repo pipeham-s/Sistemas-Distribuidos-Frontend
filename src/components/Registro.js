@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom'; // Importar Link desde react-router-dom
 
 // Contenedor principal del formulario con color verde agua y opacidad al 95%
 const FormContainer = styled.div`
@@ -73,7 +74,8 @@ const Button = styled.button`
   }
 `;
 
-const Link = styled.a`
+// Cambiar Link a StyledLink para utilizar react-router-dom
+const StyledLink = styled(Link)`
   color: #6C3B2A;
   margin-top: 15px;
   font-size: 0.9rem;
@@ -169,12 +171,13 @@ const RegisterForm = () => {
             required
           />
           <Label>
-            Acepto los <Link href="#">términos y condiciones</Link>
+            Acepto los <StyledLink to="#">términos y condiciones</StyledLink>
           </Label>
         </CheckboxContainer>
         <Button type="submit">Registrarse</Button>
       </form>
-      <Link href="#">Ya tengo una cuenta</Link>
+      {/* Cambiar el Link de Ya tengo una cuenta para que redirija a Login */}
+      <StyledLink to="/">Ya tengo una cuenta</StyledLink>
     </FormContainer>
   );
 };
