@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Importar axios
+import axios from 'axios'; // Importar axios para la solicitud
 
 // Contenedor principal del Login con estilo traslúcido
 const LoginContainer = styled.div`
@@ -65,6 +65,7 @@ const Button = styled.button`
 `;
 
 const Login = () => {
+  // Definir el estado para almacenar el correo y la contraseña
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
@@ -73,14 +74,18 @@ const Login = () => {
   // Función para manejar el submit del formulario
   const handleLogin = async () => {
     try {
-      // Solicitud POST usando axios
-      const response = await axios.post('http://localhost:8080/api/usuarios/login', { correo, contrasena });
-      
-      console.log('Iniciando sesión con: ', { correo, contrasena });
+      // Imprimir en consola para verificar los valores antes de la solicitud
+      console.log('Iniciando sesión con:', { correo, contrasena });
 
-      // Manejar la respuesta de la solicitud
+      // Realizar la solicitud POST enviando los valores como JSON
+      const response = await axios.post('http://localhost:8080/api/usuarios/login', {
+        correo, // Clave y valor se igualan automáticamente con ES6 (correo: correo)
+        contrasena // Clave y valor se igualan automáticamente con ES6 (contrasena: contrasena)
+      });
+
+      // Manejar la respuesta del backend
       if (response.status === 200) {
-        setMensaje('Inicio de sesión exitoso'); // Redirigir a la página principal
+        setMensaje('Inicio de sesión exitoso');
       } else if (response.status === 404) {
         setMensaje('Usuario no encontrado');
       } else if (response.status === 401) {
@@ -91,7 +96,6 @@ const Login = () => {
     } catch (error) {
       // Manejo de errores de red o respuesta del servidor
       if (error.response) {
-        // Si el servidor responde con un error
         if (error.response.status === 404) {
           setMensaje('Usuario no encontrado');
         } else if (error.response.status === 401) {
@@ -100,7 +104,6 @@ const Login = () => {
           setMensaje('Error en el sistema, intenta más tarde');
         }
       } else {
-        // Si no hay respuesta del servidor
         setMensaje('Error en la conexión con el servidor');
       }
     }
@@ -109,6 +112,7 @@ const Login = () => {
   return (
     <LoginContainer>
       <h2>Iniciar Sesión</h2>
+      {/* Inputs controlados */}
       <Input
         type="email"
         placeholder="Correo electrónico"
@@ -121,6 +125,7 @@ const Login = () => {
         value={contrasena}
         onChange={(e) => setContrasena(e.target.value)}
       />
+      {/* Botón que llama a handleLogin */}
       <Button onClick={handleLogin}>Iniciar Sesión</Button>
 
       {/* Mensaje de estado de inicio de sesión */}
