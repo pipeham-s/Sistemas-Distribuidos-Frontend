@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import backgroundImage from '../images/fondoprofesor.jpg'; // Ruta correcta a la imagen de fondo
 import Login from '../components/Login';
 import Header from '../components/Header'; // Header se importa aquí y se usa solo una vez
+import backgroundImage from '../images/universidad.jpg'; // Ruta correcta a la imagen de fondo
 
 // Contenedor principal de la página con el fondo de la imagen
 const PageContainer = styled.div`
