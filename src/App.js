@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage'; // Importa la página de login
 import RegisterPage from './pages/RegisterPage';
+import Home from './pages/Home';
 
 function App() {
     return (
@@ -11,8 +12,11 @@ function App() {
                     {/* Ruta para el login */}
                     <Route path="/login" element={<LoginPage />} />
 
-                    {/*ruta para register*/}
+                    {/* Ruta para el login */}
                     <Route path="/register" element={<RegisterPage />} />
+
+                    {/* Ruta para el login */}
+                    <Route path="/home" element={<Home />} />
 
                     {/* Redireccionar a /login si la ruta no coincide */}
                     <Route path="/" element={<Navigate to="/login" />} />

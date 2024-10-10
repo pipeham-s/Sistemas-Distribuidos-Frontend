@@ -86,6 +86,7 @@ const Login = () => {
       // Manejar la respuesta del backend
       if (response.status === 200) {
         setMensaje('Inicio de sesión exitoso');
+        navigate('/home');
       } else if (response.status === 404) {
         setMensaje('Usuario no encontrado');
       } else if (response.status === 401) {

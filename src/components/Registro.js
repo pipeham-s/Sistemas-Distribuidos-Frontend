@@ -1,8 +1,9 @@
-// src/components/RegisterForm.js
+
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom'; // Importar Link desde react-router-dom
+import { Link, useNavigate } from 'react-router-dom'; // Importar Link desde react-router-dom
+import axios from 'axios';
 
 // Contenedor principal del formulario con color verde agua y opacidad al 95%
 const FormContainer = styled.div`
@@ -93,9 +94,10 @@ const RegisterForm = () => {
     correo: '',
     contrasena: '',
     repetirContrasena: '',
-    tipoUsuario: '',
     aceptaTerminos: false,
   });
+
+  const navigate = useNavigate(); // Crear instancia del hook para navegación
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -105,9 +107,33 @@ const RegisterForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Datos del formulario:', formData);
+
+    if (formData.contrasena !== formData.repetirContrasena) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+
+    const usuario = {
+      nombre: formData.nombre,
+      apellido: formData.apellido,
+      cedula: formData.cedula,
+      correo: formData.correo,
+      contrasena: formData.contrasena,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/usuarios/crear', usuario);
+      console.log('Respuesta del servidor:', response.data);
+
+      // Si el registro es exitoso, mostrar mensaje y redirigir al login
+      alert('Usuario creado exitosamente');
+      navigate('/login'); // Redirigir a la página de inicio de sesión
+    } catch (error) {
+      console.error('Error al crear el usuario:', error);
+      alert('Hubo un error al registrar el usuario');
+    }
   };
 
   return (
@@ -176,7 +202,6 @@ const RegisterForm = () => {
         </CheckboxContainer>
         <Button type="submit">Registrarse</Button>
       </form>
-      {/* Cambiar el Link de Ya tengo una cuenta para que redirija a Login */}
       <StyledLink to="/">Ya tengo una cuenta</StyledLink>
     </FormContainer>
   );
