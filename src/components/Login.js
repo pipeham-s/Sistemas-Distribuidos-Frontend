@@ -78,19 +78,25 @@ const Login = () => {
       console.log('Iniciando sesión con:', { correo, contrasena });
 
       // Realizar la solicitud POST enviando los valores como JSON
-      const response = await axios.post('http://localhost:8080/api/usuarios/login', {
-        correo, // Clave y valor se igualan automáticamente con ES6 (correo: correo)
-        contrasena // Clave y valor se igualan automáticamente con ES6 (contrasena: contrasena)
+      const response = await axios.post('http://localhost:8080/auth/login', {
+        username: correo,  // Enviar correo como username
+        password: contrasena // Enviar contrasena como password
       });
 
       // Manejar la respuesta del backend
       if (response.status === 200) {
+        const token = response.data.token; // Obtener el token desde la respuesta
+        localStorage.setItem('token', token); // Guardar el token en localStorage
         setMensaje('Inicio de sesión exitoso');
-        navigate('/home');
+        navigate('/home'); // Navegar a la página principal
       } else if (response.status === 404) {
         setMensaje('Usuario no encontrado');
       } else if (response.status === 401) {
         setMensaje('Contraseña incorrecta');
+       } else if (response.status === 403) {
+          setMensaje('axios de verga');
+          
+        
       } else {
         setMensaje('Error en el sistema, intenta más tarde');
       }

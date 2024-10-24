@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom'; // Importar Link desde react-router-dom
@@ -26,16 +24,6 @@ const Title = styled.h1`
 
 // Estilos para los inputs de texto
 const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-  box-sizing: border-box;
-`;
-
-const Select = styled.select`
   width: 100%;
   padding: 10px;
   margin: 10px 0;
@@ -109,24 +97,25 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (formData.contrasena !== formData.repetirContrasena) {
       alert('Las contraseñas no coinciden');
       return;
     }
-
+  
     const usuario = {
       nombre: formData.nombre,
       apellido: formData.apellido,
       cedula: formData.cedula,
       correo: formData.correo,
-      contrasena: formData.contrasena,
+      password: formData.contrasena  // Usar 'password' como lo espera el backend
     };
-
+  
     try {
-      const response = await axios.post('http://localhost:8080/api/usuarios/crear', usuario);
+      // Ajustar el endpoint para que coincida con el backend
+      const response = await axios.post('http://localhost:8080/auth/register', usuario);
       console.log('Respuesta del servidor:', response.data);
-
+  
       // Si el registro es exitoso, mostrar mensaje y redirigir al login
       alert('Usuario creado exitosamente');
       navigate('/login'); // Redirigir a la página de inicio de sesión
@@ -135,6 +124,7 @@ const RegisterForm = () => {
       alert('Hubo un error al registrar el usuario');
     }
   };
+  
 
   return (
     <FormContainer>
