@@ -48,6 +48,7 @@ const Home = () => {
           <p><strong>Apellido:</strong> {usuario.apellido}</p>
           <p><strong>Correo:</strong> {usuario.correo}</p>
           <p><strong>Cédula:</strong> {usuario.cedula}</p>
+          <p><strong>Rol:</strong> {usuario.role}</p>
         </div>
       ) : (
         <p>Cargando los datos del usuario...</p>

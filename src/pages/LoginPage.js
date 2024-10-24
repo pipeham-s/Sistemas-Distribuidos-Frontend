@@ -42,7 +42,7 @@ const LoginPage = () => {
     <PageContainer>
       <Header /> {/* Renderiza el header solo una vez */}
     
-            <Login />
+           <Login />
       
     </PageContainer>
   );
