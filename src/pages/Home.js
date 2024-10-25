@@ -1,59 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import styled from 'styled-components';
+import Login from '../components/Login';
+import Header from '../components/Header'; // Header se importa aquí y se usa solo una vez
+import SolicitarMateria from '../components/SolicitarMateria'; // Importa el componente de solicitud de materia
+import backgroundImage from '../images/universidad.jpg'; // Ruta correcta a la imagen de fondo
 
-// Componente principal Home
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url(${backgroundImage}); /* Aplica la imagen de fondo */
+  background-size: cover; /* La imagen cubre todo el contenedor */
+  background-repeat: no-repeat; /* Evita repeticiones */
+  background-position: center; /* Centra la imagen en el contenedor */
+  height: 100vh; /* Altura completa de la pantalla */
+  width: 100vw; /* Ancho completo de la pantalla */
+  margin: 0; /* Elimina los márgenes */
+  padding: 0; /* Elimina el padding */
+  overflow: hidden; /* Evita que aparezcan scrolls */
+`;
+
 const Home = () => {
-  const [usuario, setUsuario] = useState(null);
-  const [mensajeError, setMensajeError] = useState('');
-
-  // Función para obtener los datos del usuario usando el token JWT
-  const obtenerDatosUsuario = async () => {
-    try {
-      const token = localStorage.getItem('token'); // Obtener el token del localStorage
-
-      if (!token) {
-        setMensajeError('No se encontró un token, por favor inicia sesión.');
-        return;
-      }
-
-      // Enviar solicitud GET con el token en los headers
-      const response = await axios.get('http://localhost:8080/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}` // Incluir el token en los headers
-        }
-      });
-
-      setUsuario(response.data); // Guardar los datos del usuario en el estado
-    } catch (error) {
-      console.error('Error al obtener los datos del usuario:', error);
-      setMensajeError('Hubo un error al obtener los datos del usuario. Verifica si el token es válido.');
-    }
-  };
-
-  // Obtener los datos del usuario cuando el componente se monta
-  useEffect(() => {
-    obtenerDatosUsuario();
-  }, []);
-
   return (
-    <div>
-      <h1>Bienvenido a la página Home</h1>
-
-      {mensajeError && <p>{mensajeError}</p>}
-
-      {usuario ? (
-        <div>
-          <h2>Datos del usuario autenticado:</h2>
-          <p><strong>Nombre:</strong> {usuario.nombre}</p>
-          <p><strong>Apellido:</strong> {usuario.apellido}</p>
-          <p><strong>Correo:</strong> {usuario.correo}</p>
-          <p><strong>Cédula:</strong> {usuario.cedula}</p>
-          <p><strong>Rol:</strong> {usuario.role}</p>
-        </div>
-      ) : (
-        <p>Cargando los datos del usuario...</p>
-      )}
-    </div>
+    <PageContainer>
+      <Header /> {/* Renderiza el header solo una vez */}
+      <SolicitarMateria /> {/* Agrega el componente SolicitarMateria aquí */}
+    </PageContainer>
   );
 };
 
