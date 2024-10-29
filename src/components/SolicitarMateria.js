@@ -8,9 +8,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  width: 100vw;
 `;
+
 
 const Box = styled.div`
   background-color: rgba(130, 201, 177, 0.7);
