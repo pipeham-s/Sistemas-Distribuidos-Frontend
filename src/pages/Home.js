@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import Login from '../components/Login';
 import Header from '../components/Header'; // Header se importa aquí y se usa solo una vez
 import SolicitarMateria from '../components/SolicitarMateria'; // Importa el componente de solicitud de materia
+import SolicitarClase from '../components/SolicitarClase';
 import backgroundImage from '../images/universidad.jpg'; // Ruta correcta a la imagen de fondo
 
 const PageContainer = styled.div`
@@ -26,6 +26,7 @@ const Home = () => {
     <PageContainer>
       <Header /> {/* Renderiza el header solo una vez */}
       <SolicitarMateria /> {/* Agrega el componente SolicitarMateria aquí */}
+      <SolicitarClase /> 
     </PageContainer>
   );
 };
