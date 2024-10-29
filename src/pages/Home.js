@@ -1,32 +1,43 @@
+// src/pages/Home.js
+
 import React from 'react';
 import styled from 'styled-components';
-import Header from '../components/Header'; // Header se importa aquí y se usa solo una vez
-import SolicitarMateria from '../components/SolicitarMateria'; // Importa el componente de solicitud de materia
+import Header from '../components/Header';
+import SolicitarMateria from '../components/SolicitarMateria';
 import SolicitarClase from '../components/SolicitarClase';
-import backgroundImage from '../images/universidad.jpg'; // Ruta correcta a la imagen de fondo
+import backgroundImage from '../images/universidad.jpg';
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background-image: url(${backgroundImage}); /* Aplica la imagen de fondo */
-  background-size: cover; /* La imagen cubre todo el contenedor */
-  background-repeat: no-repeat; /* Evita repeticiones */
-  background-position: center; /* Centra la imagen en el contenedor */
-  height: 100vh; /* Altura completa de la pantalla */
-  width: 100vw; /* Ancho completo de la pantalla */
-  margin: 0; /* Elimina los márgenes */
-  padding: 0; /* Elimina el padding */
-  overflow: hidden; /* Evita que aparezcan scrolls */
+  background-image: url(${backgroundImage});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh; /* Ocupa al menos toda la altura de la pantalla */
+  width: 100%;
+  margin: 0;
+  padding: 0 20px;   /* Padding horizontal para espacio lateral */
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px; /* Ancho máximo para el contenido */
+  padding-top: 80px; /* Espacio superior para evitar solapamiento con el header */
 `;
 
 const Home = () => {
   return (
     <PageContainer>
-      <Header /> {/* Renderiza el header solo una vez */}
-      <SolicitarMateria /> {/* Agrega el componente SolicitarMateria aquí */}
-      <SolicitarClase /> 
+      <Header /> {/* Asegúrate de que este componente está bien implementado */}
+      <ContentWrapper>
+        <SolicitarMateria />
+        <SolicitarClase />
+      </ContentWrapper>
     </PageContainer>
   );
 };
