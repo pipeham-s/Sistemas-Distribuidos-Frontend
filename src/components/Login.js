@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Importar axios para la solicitud
+import axios from 'axios';
 
 // Contenedor principal del Login con estilo traslúcido
 const LoginContainer = styled.div`
@@ -69,39 +69,37 @@ const Login = () => {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const navigate = useNavigate(); // Reemplazar useHistory por useNavigate
+  const navigate = useNavigate();
 
   // Función para manejar el submit del formulario
   const handleLogin = async () => {
     try {
-      // Imprimir en consola para verificar los valores antes de la solicitud
       console.log('Iniciando sesión con:', { correo, contrasena });
 
       // Realizar la solicitud POST enviando los valores como JSON
       const response = await axios.post('http://localhost:8080/auth/login', {
-        username: correo,  // Enviar correo como username
-        password: contrasena // Enviar contrasena como password
+        username: correo,
+        password: contrasena,
       });
 
       // Manejar la respuesta del backend
       if (response.status === 200) {
         const token = response.data.token; // Obtener el token desde la respuesta
+        const role = response.data.role; // Obtener el rol del usuario desde la respuesta
         localStorage.setItem('token', token); // Guardar el token en localStorage
+
         setMensaje('Inicio de sesión exitoso');
-        navigate('/home'); // Navegar a la página principal
-      } else if (response.status === 404) {
-        setMensaje('Usuario no encontrado');
-      } else if (response.status === 401) {
-        setMensaje('Contraseña incorrecta');
-       } else if (response.status === 403) {
-          setMensaje('axios de verga');
-          
-        
+
+        // Redirigir dependiendo del rol del usuario
+        if (role === 'admin') {
+          navigate('/admin'); // Navegar a la página de administración si es admin
+        } else {
+          navigate('/home'); // Navegar a la página principal si no es admin
+        }
       } else {
         setMensaje('Error en el sistema, intenta más tarde');
       }
     } catch (error) {
-      // Manejo de errores de red o respuesta del servidor
       if (error.response) {
         if (error.response.status === 404) {
           setMensaje('Usuario no encontrado');
@@ -119,7 +117,6 @@ const Login = () => {
   return (
     <LoginContainer>
       <h2>Iniciar Sesión</h2>
-      {/* Inputs controlados */}
       <Input
         type="email"
         placeholder="Correo electrónico"
@@ -132,13 +129,8 @@ const Login = () => {
         value={contrasena}
         onChange={(e) => setContrasena(e.target.value)}
       />
-      {/* Botón que llama a handleLogin */}
       <Button onClick={handleLogin}>Iniciar Sesión</Button>
-
-      {/* Mensaje de estado de inicio de sesión */}
       {mensaje && <p>{mensaje}</p>}
-
-      {/* Contenedor para los links */}
       <LinksContainer>
         <StyledLink to="/register">Crear una cuenta</StyledLink>
         <StyledLink to="#">Olvidé mi contraseña</StyledLink>

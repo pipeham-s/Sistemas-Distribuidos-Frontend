@@ -1,11 +1,8 @@
-// src/pages/Home.js
+// src/pages/AdminPage.js
 
 import React from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header';
-import SolicitarMateria from '../components/SolicitarMateria';
-import SolicitarClase from '../components/SolicitarClase';
-import MisClases from '../components/MisClases';
 import backgroundImage from '../images/universidad.jpg';
 
 const PageContainer = styled.div`
@@ -29,8 +26,8 @@ const ContentWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 500px;  /* Ajuste de tamaño para centrar bien */
-  height: 100%;  /* Tomar toda la altura disponible */
+  max-width: 1000px;  /* Ajuste de tamaño */
+  height: 100%;
   padding: 20px;
   box-sizing: border-box;
   position: relative;
@@ -38,17 +35,15 @@ const ContentWrapper = styled.div`
   transform: translateY(-50%);
 `;
 
-const Home = () => {
+const AdminPage = () => {
   return (
     <PageContainer>
       <Header />
       <ContentWrapper>
-        <SolicitarMateria />
-        <SolicitarClase />
-        <MisClases />
+        {/* Aquí puedes añadir contenido adicional más adelante */}
       </ContentWrapper>
     </PageContainer>
   );
 };
 
-export default Home;
+export default AdminPage;

@@ -4,23 +4,25 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 
-// Estilos principales
+
 const Box = styled.div`
   background-color: rgba(130, 201, 177, 0.7);
   padding: 20px;
-  margin: 20px 0; /* Margen vertical entre cajas */
+  margin: 15px 0; /* Margen reducido para igualar el espacio entre las cajas */
   border-radius: 10px;
   border: 2px solid black;
   box-sizing: border-box;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
-  min-height: 250px;
+  max-width: 400px;  /* Ancho uniforme */
+  height: 150px;  /* Altura fija reducida */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
+
+
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -51,7 +53,10 @@ const GreenButton = styled.button`
 
 const customStyles = {
   content: {
-    position: 'relative',
+    position: 'fixed', // Mantener el modal centrado
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
     padding: '20px',
     borderRadius: '10px',
     border: '2px solid black',
@@ -60,15 +65,16 @@ const customStyles = {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     maxWidth: '400px',
     width: '90%',
-    overflow: 'auto', /* Cambiado a 'auto' para evitar overflow */
+    overflow: 'auto',
     textAlign: 'center',
-    margin: 'auto',
-    maxHeight: '90vh', /* Limita la altura máxima del modal */
+    maxHeight: 'fit-content', // Reducir la altura máxima del modal
+    minHeight: 'fit-content', // Cambiar la altura mínima a 'auto' para adaptarse al contenido
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 };
+
 
 const SolicitarMateria = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
