@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
-// Contenedor principal del Login con estilo traslúcido
 const LoginContainer = styled.div`
   background-color: rgba(130, 201, 177, 0.8);
   padding: 2rem;
@@ -19,7 +19,6 @@ const LoginContainer = styled.div`
   border: 1px solid rgba(130, 201, 177, 0.5);
 `;
 
-// Contenedor de los Links
 const LinksContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -27,7 +26,6 @@ const LinksContainer = styled.div`
   margin-top: 1rem;
 `;
 
-// Estilo para cada link individual
 const StyledLink = styled(Link)`
   color: #6C3B2A;
   cursor: pointer;
@@ -38,7 +36,6 @@ const StyledLink = styled(Link)`
   }
 `;
 
-// Estilo para los Inputs
 const Input = styled.input`
   width: 100%;
   padding: 0.75rem;
@@ -47,7 +44,6 @@ const Input = styled.input`
   border-radius: 5px;
 `;
 
-// Estilo para el Botón
 const Button = styled.button`
   background-color: #6C3B2A;
   color: white;
@@ -65,36 +61,35 @@ const Button = styled.button`
 `;
 
 const Login = () => {
-  // Definir el estado para almacenar el correo y la contraseña
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
 
-  // Función para manejar el submit del formulario
   const handleLogin = async () => {
     try {
       console.log('Iniciando sesión con:', { correo, contrasena });
-
-      // Realizar la solicitud POST enviando los valores como JSON
+      
       const response = await axios.post('http://localhost:8080/auth/login', {
         username: correo,
         password: contrasena,
       });
 
-      // Manejar la respuesta del backend
       if (response.status === 200) {
-        const token = response.data.token; // Obtener el token desde la respuesta
-        const role = response.data.role; // Obtener el rol del usuario desde la respuesta
-        localStorage.setItem('token', token); // Guardar el token en localStorage
+        const token = response.data.token;
+        localStorage.setItem('token', token);
 
         setMensaje('Inicio de sesión exitoso');
+        
+        const decodedToken = jwtDecode(token); // Usando jwtDecode
+        const role = decodedToken.role; 
+        console.log(role)// Asegúrate de que el rol se llama "role" en tu token
 
-        // Redirigir dependiendo del rol del usuario
-        if (role === 'admin') {
-          navigate('/admin'); // Navegar a la página de administración si es admin
+        // Redirigir basado en el rol del usuario
+        if (role === 'ADMIN') {
+          navigate('/admin');
         } else {
-          navigate('/home'); // Navegar a la página principal si no es admin
+          navigate('/home');
         }
       } else {
         setMensaje('Error en el sistema, intenta más tarde');
