@@ -1,8 +1,9 @@
 // src/components/SolicitarClase.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import axios from 'axios';
 
 // Animación fadeIn similar al primer componente
 const fadeIn = keyframes`
@@ -14,7 +15,7 @@ const fadeIn = keyframes`
   }
 `;
 
-// Estilo del contenedor principal, similar a SolicitudCard
+// Estilo del contenedor principal
 const Box = styled.div`
   background: linear-gradient(135deg, #ffffff, #e0e0e0);
   border-radius: 20px;
@@ -51,7 +52,7 @@ const StyledTitle = styled.h2`
   text-align: center;
 `;
 
-// Botón estilo similar a los de aceptar/rechazar
+// Botón estilizado similar a SolicitarClase
 const GreenButton = styled.button`
   padding: 12px 24px;
   border: none;
@@ -97,7 +98,7 @@ const customStyles = {
     width: '90%',
     overflow: 'auto',
     textAlign: 'center',
-    maxHeight: 'fit-content', // Ajusta la altura máxima para evitar el espacio extra
+    maxHeight: 'fit-content',
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -106,19 +107,10 @@ const customStyles = {
 
 const SolicitarClase = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMateria, setSelectedMateria] = useState('');
+  const [selectedClase, setSelectedClase] = useState('');
+  const [clases, setClases] = useState([]);
   const [selectedProfesor, setSelectedProfesor] = useState('');
   const [selectedHora, setSelectedHora] = useState('');
-
-  const materias = [
-    'Matemática',
-    'Física',
-    'Química',
-    'Historia',
-    'Lengua',
-    'Biología',
-    'Geografía',
-  ];
 
   const profesores = ['Profesor A', 'Profesor B', 'Profesor C', 'Profesor D'];
 
@@ -129,17 +121,61 @@ const SolicitarClase = () => {
     '16:00 - 18:00',
   ];
 
+  useEffect(() => {
+    // Obtener las clases del backend (que corresponden a las materias)
+    const fetchClases = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/materias/todas');
+        setClases(response.data);
+      } catch (error) {
+        console.error('Error al obtener las clases:', error);
+      }
+    };
+
+    fetchClases();
+  }, []);
+
   const abrirModal = () => setIsModalOpen(true);
   const cerrarModal = () => setIsModalOpen(false);
 
   const handleSolicitud = (event) => {
     event.preventDefault();
     console.log('Clase seleccionada:', {
-      materia: selectedMateria,
+      clase: selectedClase,
       profesor: selectedProfesor,
       hora: selectedHora,
     });
-    cerrarModal();
+    enviarSolicitud();
+  };
+
+  const enviarSolicitud = async () => {
+    const payload = {
+      nombreClase: selectedClase.trim(),
+    };
+    console.log('Payload enviado:', payload);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/solicitud-clase/crear',
+        payload
+      );
+
+      if (response.status === 200) {
+        console.log('Solicitud de clase enviada correctamente');
+        alert('Solicitud de clase enviada correctamente');
+      } else {
+        console.error('Error en la solicitud de clase: ', response.data);
+        alert('Hubo un problema al enviar la solicitud de clase.' + response.data);
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data || 'Error al enviar la solicitud de clase al servidor.';
+      console.error('Error al enviar la solicitud de clase: ', errorMessage);
+      alert('Error al enviar la solicitud de clase al servidor. ' + errorMessage);
+    } finally {
+      cerrarModal();
+      setSelectedClase('');
+    }
   };
 
   return (
@@ -159,19 +195,19 @@ const SolicitarClase = () => {
         <h3 style={{ marginBottom: '10px' }}>Completa la solicitud de clase</h3>
         <form onSubmit={handleSolicitud}>
           <label style={{ display: 'block', marginBottom: '15px', textAlign: 'left' }}>
-            Nombre de la materia:
+            Nombre de la clase:
             <select
               required
-              value={selectedMateria}
-              onChange={(e) => setSelectedMateria(e.target.value)}
+              value={selectedClase}
+              onChange={(e) => setSelectedClase(e.target.value)}
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
             >
               <option value="" disabled>
-                Seleccione una materia
+                Seleccione una clase
               </option>
-              {materias.map((materia, index) => (
-                <option key={index} value={materia}>
-                  {materia}
+              {clases.map((clase) => (
+                <option key={clase.id} value={clase.nombre}>
+                  {clase.nombre}
                 </option>
               ))}
             </select>

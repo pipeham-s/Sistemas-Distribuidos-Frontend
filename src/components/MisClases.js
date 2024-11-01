@@ -1,44 +1,71 @@
 // src/components/MisClases.js
 
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-// Estilos principales
+// Animación fadeIn similar al primer componente
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+// Estilo del contenedor principal
 const Box = styled.div`
-  background-color: rgba(130, 201, 177, 0.7);
-  padding: 20px;
-  margin: 15px 0; /* Margen uniforme entre las cajas */
-  border-radius: 10px;
-  border: 2px solid black;
-  box-sizing: border-box;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;  /* Ancho uniforme */
-  height: 150px;  /* Altura ajustada */
+  background: linear-gradient(135deg, #ffffff, #e0e0e0);
+  border-radius: 20px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  padding: 25px;
+  width: 350px;
+  margin: 15px;
+  color: #333;
+  transition: transform 0.4s, box-shadow 0.4s, border-bottom 0.4s;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border-bottom: 4px solid transparent;
+  animation: ${fadeIn} 1.5s ease-in;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
+    border-bottom: 4px solid #4caf50;
+  }
 `;
 
 const StyledTitle = styled.h2`
-  color: black;
-  font-size: 24px;
+  color: #333;
+  font-size: 1.8rem;
   margin-bottom: 15px;
   text-align: center;
 `;
 
+// Botón estilizado similar a SolicitarClase
 const GreenButton = styled.button`
-  background-color: #28a745;
-  color: white;
-  padding: 10px 18px;
-  font-size: 16px;
-  border: 2px solid black;
-  border-radius: 5px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: bold;
+  transition: background 0.4s, transform 0.3s;
+  color: #fff;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+
+  background: #4caf50;
   &:hover {
-    background-color: #218838;
+    background: #388e3c;
+    transform: scale(1.05);
   }
 `;
 
@@ -52,7 +79,7 @@ const MisClases = () => {
   return (
     <Box>
       <StyledTitle>Mis Clases</StyledTitle>
-      <GreenButton onClick={handleNavigate}>Ver Mis Clases</GreenButton>
+      <GreenButton onClick={handleNavigate} style={{ alignSelf: 'center' }}>Ver Mis Clases</GreenButton>
     </Box>
   );
 };
