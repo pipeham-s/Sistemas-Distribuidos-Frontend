@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Header from '../components/Header';
 import backgroundImage from '../images/universidad.jpg';
 import SolicitudesPendientes from '../components/SolicitudesPendientes';
+import GestionMaterias from '../components/GestionMaterias';
 
 const PageContainer = styled.div`
   display: flex;
@@ -42,6 +43,7 @@ const AdminPage = () => {
       <Header />
       <ContentWrapper>
         <SolicitudesPendientes/>
+        <GestionMaterias/>
       </ContentWrapper>
     </PageContainer>
   );
