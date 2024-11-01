@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
+import axios from 'axios';
 
 
 const Box = styled.div`
@@ -99,6 +100,61 @@ const SolicitarMateria = () => {
     cerrarModal();
   };
 
+  const enviarSolicitud = async () => {
+    const userString = localStorage.getItem("user");
+    console.log("Contenido de 'user' en local storage:", userString);
+
+    // Realizar doble parseo del string de 'user'
+    const parsedUserString = JSON.parse(userString); // Primer parseo
+    const user = JSON.parse(parsedUserString.value); // Segundo parseo para obtener el objeto real
+
+    console.log("Objeto user parseado:", user);
+
+    // Acceder a la cédula en localStorage
+    const cedulaUsuario = localStorage.getItem("cedula");
+
+    // Verificar si la cédula fue obtenida correctamente
+    if (!cedulaUsuario) {
+      console.error(
+        "No se encontró la cédula del usuario en el objeto user."
+      );
+      alert("Error al obtener la cédula del ofertante.");
+      return;
+    }
+    // Construye el payload con la cédula y el nombre del rubro
+    const payload = {
+      cedulaUsuario: cedulaUsuario, // Reemplaza con la cédula correcta si está guardada en el localStorage
+      nombreMateria: selectedMateria.trim(), // Asegúrate de que `selectedCategory` tiene el nombre del rubro correcto
+    };
+    console.log("Payload enviado:", payload);
+
+    try {
+      // Envío de la solicitud al backend
+      const response = await axios.post(
+        "http://localhost:8080/api/solicitud-materia/crear",
+        payload
+      );
+
+      if (response.status === 200) {
+        // Si la solicitud es exitosa, muestra un mensaje de éxito o realiza cualquier otra acción
+        console.log("Solicitud enviada correctamente");
+        alert("Solicitud enviada correctamente");
+      } else {
+        console.error("Error en la solicitud: ", response.data);
+        alert("Hubo un problema al enviar la solicitud." + response.data);
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data || "Error al enviar la solicitud al servidor.";
+      console.error("Error al enviar la solicitud: ", errorMessage);
+      alert("Error al enviar la solicitud al servidor. " + errorMessage);
+    } finally {
+      // Cerrar el modal y restablecer el estado
+      cerrarModal();
+      setSelectedMateria("");
+    }
+  };
+
   return (
     <Box>
       <HeaderStyled>
@@ -134,7 +190,9 @@ const SolicitarMateria = () => {
             </select>
           </label>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <GreenButton type="submit">Enviar solicitud</GreenButton>
+            <GreenButton type="submit" onClick={enviarSolicitud}>
+              Enviar solicitud
+              </GreenButton>
             <GreenButton type="button" onClick={cerrarModal}>
               Cancelar
             </GreenButton>
