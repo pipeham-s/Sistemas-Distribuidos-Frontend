@@ -4,6 +4,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header';
 import backgroundImage from '../images/universidad.jpg';
+import SolicitudesPendientes from '../components/SolicitudesPendientes';
 
 const PageContainer = styled.div`
   display: flex;
@@ -40,7 +41,7 @@ const AdminPage = () => {
     <PageContainer>
       <Header />
       <ContentWrapper>
-        {/* Aquí puedes añadir contenido adicional más adelante */}
+        <SolicitudesPendientes/>
       </ContentWrapper>
     </PageContainer>
   );
