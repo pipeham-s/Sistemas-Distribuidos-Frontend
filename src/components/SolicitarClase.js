@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Animación fadeIn similar al primer componente
 const fadeIn = keyframes`
@@ -105,14 +107,30 @@ const customStyles = {
   },
 };
 
+const StyledDatePicker = styled(DatePicker)`
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: border 0.3s ease;
+
+  &:focus {
+    border: 1px solid #4caf50;
+    outline: none;
+  }
+`;
+
 const SolicitarClase = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClase, setSelectedClase] = useState('');
   const [clases, setClases] = useState([]);
   const [selectedProfesor, setSelectedProfesor] = useState('');
+  const [profesores, setProfesores] = useState([]);
   const [selectedHora, setSelectedHora] = useState('');
-
-  const profesores = ['Profesor A', 'Profesor B', 'Profesor C', 'Profesor D'];
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const horas = [
     '08:00 - 10:00',
@@ -135,6 +153,24 @@ const SolicitarClase = () => {
     fetchClases();
   }, []);
 
+  useEffect(() => {
+    if (selectedClase) {
+      // Obtener los profesores para la materia seleccionada
+      const fetchProfesores = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/alumnos/por-materia?nombreMateria=${selectedClase}`);
+          setProfesores(response.data);
+        } catch (error) {
+          console.error('Error al obtener los profesores:', error);
+        }
+      };
+
+      fetchProfesores();
+    } else {
+      setProfesores([]);
+    }
+  }, [selectedClase]);
+
   const abrirModal = () => setIsModalOpen(true);
   const cerrarModal = () => setIsModalOpen(false);
 
@@ -144,6 +180,7 @@ const SolicitarClase = () => {
       clase: selectedClase,
       profesor: selectedProfesor,
       hora: selectedHora,
+      fecha: selectedDate,
     });
     enviarSolicitud();
   };
@@ -175,6 +212,9 @@ const SolicitarClase = () => {
     } finally {
       cerrarModal();
       setSelectedClase('');
+      setSelectedProfesor('');
+      setSelectedHora('');
+      setSelectedDate(null);
     }
   };
 
@@ -220,9 +260,10 @@ const SolicitarClase = () => {
               value={selectedProfesor}
               onChange={(e) => setSelectedProfesor(e.target.value)}
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+              disabled={!profesores.length}
             >
               <option value="" disabled>
-                Seleccione un profesor
+                {profesores.length ? 'Seleccione un profesor' : 'Seleccione una clase primero'}
               </option>
               {profesores.map((profesor, index) => (
                 <option key={index} value={profesor}>
@@ -239,9 +280,10 @@ const SolicitarClase = () => {
               value={selectedHora}
               onChange={(e) => setSelectedHora(e.target.value)}
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+              disabled={!selectedProfesor}
             >
               <option value="" disabled>
-                Seleccione una hora
+                {selectedProfesor ? 'Seleccione una hora' : 'Seleccione un profesor primero'}
               </option>
               {horas.map((hora, index) => (
                 <option key={index} value={hora}>
@@ -249,6 +291,17 @@ const SolicitarClase = () => {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label style={{ display: 'block', marginBottom: '15px', textAlign: 'left' }}>
+            Fecha:
+            <StyledDatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Seleccione una fecha"
+              required
+            />
           </label>
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>

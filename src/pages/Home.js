@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import SolicitarMateria from '../components/SolicitarMateria';
 import SolicitarClase from '../components/SolicitarClase';
 import MisClases from '../components/MisClases';
+import SolicitudesClasesPendientes from '../components/SolicitudesClasesPendientes'; // Asegúrate de esta ruta
 import backgroundImage from '../images/universidad.jpg';
 
 const PageContainer = styled.div`
@@ -46,6 +47,7 @@ const Home = () => {
         <SolicitarMateria />
         <SolicitarClase />
         <MisClases />
+        <SolicitudesClasesPendientes /> {/* Verifica la importación y exportación de este componente */}
       </ContentWrapper>
     </PageContainer>
   );
