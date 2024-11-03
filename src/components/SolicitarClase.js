@@ -128,16 +128,9 @@ const SolicitarClase = () => {
   const [selectedClase, setSelectedClase] = useState('');
   const [clases, setClases] = useState([]);
   const [selectedProfesor, setSelectedProfesor] = useState('');
+  const [selectedProfesorCedula, setSelectedProfesorCedula] = useState('');
   const [profesores, setProfesores] = useState([]);
-  const [selectedHora, setSelectedHora] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
-
-  const horas = [
-    '08:00 - 10:00',
-    '10:00 - 12:00',
-    '14:00 - 16:00',
-    '16:00 - 18:00',
-  ];
 
   useEffect(() => {
     // Obtener las clases del backend (que corresponden a las materias)
@@ -179,22 +172,57 @@ const SolicitarClase = () => {
     console.log('Clase seleccionada:', {
       clase: selectedClase,
       profesor: selectedProfesor,
-      hora: selectedHora,
+      cedulaProfesor: selectedProfesorCedula,
       fecha: selectedDate,
     });
     enviarSolicitud();
   };
 
   const enviarSolicitud = async () => {
-    const payload = {
-      nombreClase: selectedClase.trim(),
+    // Obtener el token almacenado (suponiendo que está en localStorage)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Error: No se encontró el token de autenticación.');
+      return;
+    }
+
+    // Decodificar el payload del token para obtener la cédula del alumno
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+        .join('')
+    );
+
+    const payload = JSON.parse(jsonPayload);
+    const cedulaAlumno = payload.cedula;
+
+    if (!cedulaAlumno) {
+      alert('Error: No se pudo extraer la cédula del alumno del token.');
+      return;
+    }
+
+    // Crear el objeto de solicitud
+    const solicitudPayload = {
+      nombreMateria: selectedClase.trim(),
+      cedulaProfesor: selectedProfesorCedula,
+      cedulaAlumno: cedulaAlumno,
+      fecha: selectedDate.toISOString(), // Convertir la fecha a ISOString para enviarla al backend
     };
-    console.log('Payload enviado:', payload);
+
+    console.log('Payload enviado:', solicitudPayload);
 
     try {
       const response = await axios.post(
         'http://localhost:8080/api/solicitud-clase/crear',
-        payload
+        solicitudPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (response.status === 200) {
@@ -213,7 +241,7 @@ const SolicitarClase = () => {
       cerrarModal();
       setSelectedClase('');
       setSelectedProfesor('');
-      setSelectedHora('');
+      setSelectedProfesorCedula('');
       setSelectedDate(null);
     }
   };
@@ -258,7 +286,13 @@ const SolicitarClase = () => {
             <select
               required
               value={selectedProfesor}
-              onChange={(e) => setSelectedProfesor(e.target.value)}
+              onChange={(e) => {
+                const selected = profesores.find(
+                  (profesor) => profesor.nombreCompleto === e.target.value
+                );
+                setSelectedProfesor(e.target.value);
+                setSelectedProfesorCedula(selected?.cedula || '');
+              }}
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               disabled={!profesores.length}
             >
@@ -266,28 +300,8 @@ const SolicitarClase = () => {
                 {profesores.length ? 'Seleccione un profesor' : 'Seleccione una clase primero'}
               </option>
               {profesores.map((profesor, index) => (
-                <option key={index} value={profesor}>
-                  {profesor}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label style={{ display: 'block', marginBottom: '15px', textAlign: 'left' }}>
-            Hora:
-            <select
-              required
-              value={selectedHora}
-              onChange={(e) => setSelectedHora(e.target.value)}
-              style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-              disabled={!selectedProfesor}
-            >
-              <option value="" disabled>
-                {selectedProfesor ? 'Seleccione una hora' : 'Seleccione un profesor primero'}
-              </option>
-              {horas.map((hora, index) => (
-                <option key={index} value={hora}>
-                  {hora}
+                <option key={index} value={profesor.nombreCompleto}>
+                  {profesor.nombreCompleto}
                 </option>
               ))}
             </select>
