@@ -40,50 +40,63 @@ const ContentWrapper = styled.div`
   animation: ${fadeIn} 2s ease-in;
 `;
 
-const SolicitudCard = styled.div`
-  background: linear-gradient(135deg, #ffffff, #e0e0e0);
-  border-radius: 20px;
+const TablaSolicitudes = styled.div`
+  width: 100%;
+  max-width: 800px;
+  border-collapse: collapse;
+  margin-top: 30px;
+  background: #ffffff;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-  padding: 25px;
-  width: 350px;
-  margin: 15px;
-  color: #333;
-  transition: transform 0.4s, box-shadow 0.4s, border-bottom 0.4s;
-  position: relative;
+  border-radius: 10px;
   overflow: hidden;
-  cursor: pointer;
-  border-bottom: 4px solid transparent;
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
-    border-bottom: 4px solid #4caf50;
+`;
+
+const TablaWrapper = styled.div`
+  max-height: 40vh;
+  overflow-y: auto;
+  border-radius: 10px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
   }
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transition: opacity 0.4s;
-  }
-  &:hover::before {
-    opacity: 1;
+  &::-webkit-scrollbar-thumb {
+    background-color: #4caf50;
+    border-radius: 10px;
   }
 `;
 
-const BotonesAccion = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
+const Tabla = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TablaHeader = styled.thead`
+  background: #4caf50;
+  color: #ffffff;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+`;
+
+const TablaRow = styled.tr`
+  &:nth-child(even) {
+    background: #f2f2f2;
+  }
+`;
+
+const TablaHeaderCell = styled.th`
+  padding: 15px;
+`;
+
+const TablaCell = styled.td`
+  padding: 15px;
 `;
 
 const Boton = styled.button`
-  padding: 12px 24px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
   transition: background 0.4s, transform 0.3s;
@@ -136,8 +149,14 @@ const SolicitudesPendientes = () => {
   };
 
   const rechazarSolicitud = (id) => {
-    console.log(`Solicitud con id ${id} rechazada`);
-    // Aquí puedes agregar la lógica para actualizar el estado de la solicitud
+    axios.post(`http://localhost:8080/api/solicitud-materia/rechazar/${id}`)
+      .then(response => {
+        console.log(`Solicitud con id ${id} RECHAZADA`);
+        setSolicitudes(solicitudes.filter(solicitud => solicitud.id !== id));
+      })
+      .catch(error => {
+        console.error(`Error al rechazar la solicitud con id ${id}:`, error);
+      });
   };
 
   return (
@@ -145,22 +164,35 @@ const SolicitudesPendientes = () => {
       <Header />
       <ContentWrapper>
         <h2 style={{ color: '#ffffff', marginBottom: '30px', fontSize: '2.5rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>Solicitudes Pendientes</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {solicitudes.length > 0 ? (
-            solicitudes.map((solicitud) => (
-              <SolicitudCard key={solicitud.id}>
-                <h3 style={{ marginBottom: '15px', fontSize: '1.8rem' }}>{solicitud.materia.nombre}</h3>
-                <p><strong>Estudiante:</strong> {solicitud.alumno.nombre + ' ' + solicitud.alumno.apellido}</p>
-                <BotonesAccion>
-                  <Boton className="aceptar" onClick={() => aceptarSolicitud(solicitud.id)}>Aceptar</Boton>
-                  <Boton className="rechazar" onClick={() => rechazarSolicitud(solicitud.id)}>Rechazar</Boton>
-                </BotonesAccion>
-              </SolicitudCard>
-            ))
-          ) : (
-            <p style={{ color: '#ffffff', fontSize: '1.5rem' }}>No hay solicitudes pendientes.</p>
-          )}
-        </div>
+        {solicitudes.length > 0 ? (
+          <TablaSolicitudes>
+            <TablaWrapper>
+              <Tabla>
+                <TablaHeader>
+                  <TablaRow>
+                    <TablaHeaderCell>Materia</TablaHeaderCell>
+                    <TablaHeaderCell>Profesor</TablaHeaderCell>
+                    <TablaHeaderCell>Acciones</TablaHeaderCell>
+                  </TablaRow>
+                </TablaHeader>
+                <tbody>
+                  {solicitudes.map((solicitud) => (
+                    <TablaRow key={solicitud.id}>
+                      <TablaCell>{solicitud.materia.nombre}</TablaCell>
+                      <TablaCell>{solicitud.alumno.nombre + ' ' + solicitud.alumno.apellido}</TablaCell>
+                      <TablaCell>
+                        <Boton className="aceptar" onClick={() => aceptarSolicitud(solicitud.id)}>Aceptar</Boton>
+                        <Boton className="rechazar" onClick={() => rechazarSolicitud(solicitud.id)} style={{ marginLeft: '10px' }}>Rechazar</Boton>
+                      </TablaCell>
+                    </TablaRow>
+                  ))}
+                </tbody>
+              </Tabla>
+            </TablaWrapper>
+          </TablaSolicitudes>
+        ) : (
+          <p style={{ color: '#ffffff', fontSize: '1.5rem' }}>No hay solicitudes pendientes.</p>
+        )}
       </ContentWrapper>
     </PageContainer>
   );
