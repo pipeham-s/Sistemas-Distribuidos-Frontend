@@ -211,7 +211,7 @@ const Notificaciones = () => {
 
       try {
         const responseClase = await axios.get(
-          `http://localhost:8080/api/solicitud-clase/pendientes/${cedula}`,
+          `http://localhost:8080/api/solicitud-clase/pendientes${cedula}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

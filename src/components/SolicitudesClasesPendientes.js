@@ -53,22 +53,6 @@ const StyledTitle = styled.h2`
   text-align: center;
 `;
 
-const SolicitudItem = styled.div`
-  background-color: rgba(130, 201, 177, 0.2);
-  border: 2px solid #4caf50;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 10px 0;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SolicitudDetails = styled.p`
-  margin: 5px 0;
-  font-size: 1rem;
-  color: #333;
-`;
-
 const GreenButton = styled.button`
   padding: 12px 24px;
   border: none;
@@ -89,6 +73,41 @@ const GreenButton = styled.button`
   }
 `;
 
+const RedButton = styled.button`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.4s, transform 0.3s;
+  color: #fff;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  background: #f44336;
+  margin-left: 10px;
+
+  &:hover {
+    background: #d32f2f;
+    transform: scale(1.05);
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+  }
+`;
+
 const customStyles = {
   content: {
     position: 'fixed',
@@ -101,7 +120,7 @@ const customStyles = {
     background: 'linear-gradient(135deg, #ffffff, #e0e0e0)',
     boxSizing: 'border-box',
     boxShadow: '0 16px 32px rgba(0, 0, 0, 0.6)',
-    maxWidth: '400px',
+    maxWidth: '800px',
     width: '90%',
     overflow: 'auto',
     textAlign: 'center',
@@ -112,68 +131,164 @@ const customStyles = {
   },
 };
 
+// Tabla
+const TablaSolicitudes = styled.div`
+  width: 100%;
+  max-width: 800px;
+  border-collapse: collapse;
+  margin-top: 30px;
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  overflow: hidden;
+`;
+
+const TablaWrapper = styled.div`
+  max-height: 40vh;
+  overflow-y: auto;
+  border-radius: 10px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #4caf50;
+    border-radius: 10px;
+  }
+`;
+
+const Tabla = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TablaHeader = styled.thead`
+  background: #4caf50;
+  color: #ffffff;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+`;
+
+const TablaRow = styled.tr`
+  &:nth-child(even) {
+    background: #f2f2f2;
+  }
+`;
+
+const TablaHeaderCell = styled.th`
+  padding: 15px;
+`;
+
+const TablaCell = styled.td`
+  padding: 15px;
+  text-align: left;
+`;
+
 const SolicitudesClasesPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
 
   useEffect(() => {
-    // Obtener las solicitudes pendientes del backend
+    // Función para obtener las solicitudes pendientes del backend
     const fetchSolicitudes = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/solicitudes-clases/pendientes');
+        const response = await axios.get('http://localhost:8080/api/solicitud-clase/pendientes/profesor12345678');
         setSolicitudes(response.data);
       } catch (error) {
         console.error('Error al obtener las solicitudes de clases pendientes:', error);
       }
     };
 
+    // Llamar a la función por primera vez
     fetchSolicitudes();
+
+    // Configurar el intervalo para actualizar cada 5 segundos
+    const interval = setInterval(fetchSolicitudes, 5000);
+
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(interval);
   }, []);
 
-  const abrirModal = (solicitud) => {
-    setSelectedSolicitud(solicitud);
+  const abrirModal = () => {
     setIsModalOpen(true);
   };
 
   const cerrarModal = () => {
     setIsModalOpen(false);
-    setSelectedSolicitud(null);
+  };
+
+  // Función para aceptar solicitud
+  const aceptarSolicitud = async (id) => {
+    try {
+      // Hacer la solicitud al backend para aprobar la solicitud de clase
+      await axios.post(`http://localhost:8080/api/solicitud-clase/aprobar/${id}`);
+      
+      // Actualizar la lista de solicitudes eliminando la que ha sido aprobada
+      setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== id));
+
+      console.log(`Solicitud con ID ${id} aprobada exitosamente.`);
+    } catch (error) {
+      console.error('Error al aceptar la solicitud:', error);
+    }
+  };
+
+  // Función para rechazar solicitud
+  const rechazarSolicitud = async (id) => {
+    try {
+      await axios.post(`http://localhost:8080/api/solicitud-clase/rechazar/${id}`);
+      setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== id));
+    } catch (error) {
+      console.error('Error al rechazar la solicitud:', error);
+    }
   };
 
   return (
     <Box>
       <HeaderStyled>
         <StyledTitle>Solicitudes de Clases Pendientes</StyledTitle>
-        <GreenButton onClick={() => abrirModal(null)}>Ver mis solicitudes</GreenButton>
+        <GreenButton onClick={abrirModal}>Ver mis solicitudes</GreenButton>
       </HeaderStyled>
-      {solicitudes.map((solicitud, index) => (
-        <SolicitudItem key={index} onClick={() => abrirModal(solicitud)}>
-          <SolicitudDetails><strong>Materia:</strong> {solicitud.materia}</SolicitudDetails>
-          <SolicitudDetails><strong>Profesor:</strong> {solicitud.profesor}</SolicitudDetails>
-          <SolicitudDetails><strong>Fecha:</strong> {solicitud.fecha}</SolicitudDetails>
-          <SolicitudDetails><strong>Hora:</strong> {solicitud.hora}</SolicitudDetails>
-        </SolicitudItem>
-      ))}
 
       <Modal
         isOpen={isModalOpen}
         onRequestClose={cerrarModal}
-        contentLabel="Detalles de la Solicitud"
+        contentLabel="Detalles de las Solicitudes"
         style={customStyles}
         ariaHideApp={false}
       >
-        {selectedSolicitud ? (
-          <div>
-            <h3>Detalles de la Solicitud</h3>
-            <SolicitudDetails><strong>Materia:</strong> {selectedSolicitud.materia}</SolicitudDetails>
-            <SolicitudDetails><strong>Profesor:</strong> {selectedSolicitud.profesor}</SolicitudDetails>
-            <SolicitudDetails><strong>Fecha:</strong> {selectedSolicitud.fecha}</SolicitudDetails>
-            <SolicitudDetails><strong>Hora:</strong> {selectedSolicitud.hora}</SolicitudDetails>
-            <GreenButton onClick={cerrarModal}>Cerrar</GreenButton>
-          </div>
+        <CloseButton onClick={cerrarModal}>×</CloseButton>
+        {solicitudes.length > 0 ? (
+          <TablaSolicitudes>
+            <TablaWrapper>
+              <Tabla>
+                <TablaHeader>
+                  <TablaRow>
+                    <TablaHeaderCell>Materia</TablaHeaderCell>
+                    <TablaHeaderCell>Alumno</TablaHeaderCell>
+                    <TablaHeaderCell>Fecha Solicitud</TablaHeaderCell>
+                    <TablaHeaderCell>Acciones</TablaHeaderCell>
+                  </TablaRow>
+                </TablaHeader>
+                <tbody>
+                  {solicitudes.map((solicitud, index) => (
+                    <TablaRow key={index}>
+                      <TablaCell>{solicitud.materia?.nombre || 'Materia no disponible'}</TablaCell>
+                      <TablaCell>{solicitud.alumno ? `${solicitud.alumno.nombre} ${solicitud.alumno.apellido}` : 'Alumno no disponible'}</TablaCell>
+                      <TablaCell>{solicitud.fechaSolicitud ? new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') : 'Fecha no disponible'}</TablaCell>
+                      <TablaCell>
+                        <GreenButton onClick={() => aceptarSolicitud(solicitud.id)}>Aceptar</GreenButton>
+                        <RedButton onClick={() => rechazarSolicitud(solicitud.id)}>Rechazar</RedButton>
+                      </TablaCell>
+                    </TablaRow>
+                  ))}
+                </tbody>
+              </Tabla>
+            </TablaWrapper>
+          </TablaSolicitudes>
         ) : (
-          <p style={{ textAlign: 'center', color: '#666' }}>No hay detalles disponibles.</p>
+          <p style={{ textAlign: 'center', color: '#666' }}>No hay solicitudes pendientes.</p>
         )}
       </Modal>
     </Box>

@@ -72,6 +72,7 @@ const Home = () => {
           <SolicitarMateria />
           <SolicitarClase />
           <MisClases />
+          <SolicitudesClasesPendientes />
         </RightSection>
       </MainContent>
     </PageContainer>
