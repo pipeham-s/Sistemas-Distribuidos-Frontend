@@ -100,81 +100,13 @@ const Notificaciones = () => {
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
       setToken(savedToken);
+      obtenerSolicitudesPendientes(savedToken);
     } else {
       console.error('Token no encontrado en localStorage');
     }
   }, []);
 
-  useEffect(() => {
-    const obtenerSolicitudesPendientes = async () => {
-      if (!token) {
-        console.error('Token no disponible');
-        return;
-      }
-
-      try {
-        let decodedToken;
-        try {
-          decodedToken = JSON.parse(atob(token.split('.')[1]));
-        } catch (e) {
-          console.error('Error al decodificar el token:', e);
-          return;
-        }
-
-        const cedula = decodedToken?.cedula;
-        if (!cedula) {
-          console.error('Cédula no encontrada en el token');
-          return;
-        }
-
-        try {
-          const responseMateria = await axios.get(
-            `http://localhost:8080/api/solicitud-materia/pendientes/${cedula}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setSolicitudesMateria(responseMateria.data);
-        } catch (error) {
-          console.error('Error al obtener solicitudes de materia:', error);
-        }
-
-        try {
-          const responseClase = await axios.get(
-            `http://localhost:8080/api/solicitud-clase/pendientes/${cedula}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setSolicitudesClase(responseClase.data);
-        } catch (error) {
-          console.error('Error al obtener solicitudes de clase:', error);
-        }
-      } catch (error) {
-        console.error('Error general al obtener solicitudes:', error);
-      }
-    };
-
-    if (token) {
-      obtenerSolicitudesPendientes();
-    }
-  }, [token]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (token) {
-        obtenerSolicitudesPendientes();
-      }
-    }, 5000); // Actualiza cada 5 segundos
-
-    return () => clearInterval(interval);
-  }, [token]);
-
-  const obtenerSolicitudesPendientes = async () => {
+  const obtenerSolicitudesPendientes = async (token) => {
     if (!token) {
       console.error('Token no disponible');
       return;
@@ -211,7 +143,7 @@ const Notificaciones = () => {
 
       try {
         const responseClase = await axios.get(
-          `http://localhost:8080/api/solicitud-clase/pendientes${cedula}`,
+          `http://localhost:8080/api/solicitud-clase/pendientes/${cedula}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
