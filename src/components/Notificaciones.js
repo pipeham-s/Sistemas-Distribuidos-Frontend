@@ -215,20 +215,38 @@ const Notificaciones = () => {
                 <tr>
                   <TablaEncabezado>Materia</TablaEncabezado>
                   <TablaEncabezado>Profesor</TablaEncabezado>
-                  <TablaEncabezado>Fecha de Solicitud</TablaEncabezado>
+                  <TablaEncabezado>Fecha de la clase</TablaEncabezado>
                   <TablaEncabezado>Estado</TablaEncabezado>
                 </tr>
               </thead>
               <tbody>
-                {filtrarSolicitudes(solicitudesClase, filtroClase).length > 0 ? (
-                  filtrarSolicitudes(solicitudesClase, filtroClase).map((solicitud) => (
-                    <TablaFila key={solicitud.id}>
-                      <TablaCelda>{solicitud.materia?.nombre || 'No disponible'}</TablaCelda>
-                      <TablaCelda>{`${solicitud.profesor?.nombre} ${solicitud.profesor?.apellido}` || 'No disponible'}</TablaCelda>
-                      <TablaCelda>{new Date(solicitud.fechaSolicitud).toLocaleString() || 'No disponible'}</TablaCelda>
-                      <TablaCelda>{solicitud.estado || 'No disponible'}</TablaCelda>
-                    </TablaFila>
-                  ))
+                {filtrarSolicitudes(solicitudesClase, filtroClase)
+                  .filter((solicitud) => {
+                    const fechaSolicitud = new Date(solicitud.fechaSolicitud);
+                    const hoy = new Date();
+                    // Comparar solo la parte de la fecha, ignorando la hora
+                    return fechaSolicitud.setHours(0, 0, 0, 0) >= hoy.setHours(0, 0, 0, 0);
+                  })
+                  .length > 0 ? (
+                  filtrarSolicitudes(solicitudesClase, filtroClase)
+                    .filter((solicitud) => {
+                      const fechaSolicitud = new Date(solicitud.fechaSolicitud);
+                      const hoy = new Date();
+                      // Comparar solo la parte de la fecha, ignorando la hora
+                      return fechaSolicitud.setHours(0, 0, 0, 0) >= hoy.setHours(0, 0, 0, 0);
+                    })
+                    .map((solicitud) => (
+                      <TablaFila key={solicitud.id}>
+                        <TablaCelda>{solicitud.materia?.nombre || 'No disponible'}</TablaCelda>
+                        <TablaCelda>{`${solicitud.profesor?.nombre} ${solicitud.profesor?.apellido}` || 'No disponible'}</TablaCelda>
+                        <TablaCelda>{new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                        }) || 'No disponible'}</TablaCelda>
+                        <TablaCelda>{solicitud.estado || 'No disponible'}</TablaCelda>
+                      </TablaFila>
+                    ))
                 ) : (
                   <tr>
                     <TablaCelda colSpan="4">No tienes solicitudes de clase pendientes.</TablaCelda>

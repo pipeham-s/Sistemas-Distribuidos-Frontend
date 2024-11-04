@@ -209,7 +209,7 @@ const SolicitarClase = () => {
       nombreMateria: selectedClase.trim(),
       cedulaProfesor: selectedProfesorCedula,
       cedulaAlumno: cedulaAlumno,
-      fecha: selectedDate.toISOString(), // Convertir la fecha a ISOString para enviarla al backend
+      fecha: selectedDate ? selectedDate.toISOString() : new Date().toISOString(), // Utiliza la fecha seleccionada
     };
 
     console.log('Payload enviado:', solicitudPayload);

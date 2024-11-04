@@ -1,0 +1,15 @@
+/* calendarStyles.css */
+
+/* Hacer que los números de los días sean un poco más marcados */
+.fc .fc-daygrid-day-number {
+    font-weight: 600;  /* Hacer el número un poco más oscuro */
+    color: #333;  /* Usar un gris oscuro para los números */
+  }
+  
+  /* Hacer las líneas del calendario un poco más oscuras */
+  .fc .fc-daygrid-day-frame,
+  .fc .fc-scrollgrid-sync-table td,
+  .fc .fc-scrollgrid-sync-table th {
+    border: 1px solid #bbb;  /* Hacer las líneas del calendario un poco más oscuras (gris oscuro) */
+  }
+  
