@@ -1,5 +1,3 @@
-// src/components/SolicitudesClasesPendientes.js
-
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import styled, { keyframes } from 'styled-components';
@@ -193,7 +191,11 @@ const SolicitudesClasesPendientes = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:8080/api/solicitud-clase/pendientes/profesor${decodedToken.cedula}`);
+        const response = await axios.get(`http://localhost:8080/api/solicitud-clase/pendientes/profesor${decodedToken.cedula}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setSolicitudes(response.data);
       } catch (error) {
         console.error('Error al obtener las solicitudes de clases pendientes:', error);
@@ -214,21 +216,53 @@ const SolicitudesClasesPendientes = () => {
 
   // Función para aceptar solicitud
   const aceptarSolicitud = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no disponible');
+      return;
+    }
+
     try {
-      await axios.post(`http://localhost:8080/api/solicitud-clase/aprobar/${id}`);
+      console.log(`Intentando aceptar solicitud con ID: ${id}`);
+      const response = await axios.post(`http://localhost:8080/api/solicitud-clase/aceptar/${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Respuesta del servidor:', response.data);
       setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== id));
     } catch (error) {
-      console.error('Error al aceptar la solicitud:', error);
+      if (error.response) {
+        console.error('Error del servidor al aceptar la solicitud:', error.response.data);
+      } else {
+        console.error('Error inesperado al aceptar la solicitud:', error);
+      }
     }
   };
 
   // Función para rechazar solicitud
   const rechazarSolicitud = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no disponible');
+      return;
+    }
+
     try {
-      await axios.post(`http://localhost:8080/api/solicitud-clase/rechazar/${id}`);
+      console.log(`Intentando rechazar solicitud con ID: ${id}`);
+      const response = await axios.post(`http://localhost:8080/api/solicitud-clase/rechazar/${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Respuesta del servidor:', response.data);
       setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== id));
     } catch (error) {
-      console.error('Error al rechazar la solicitud:', error);
+      if (error.response) {
+        console.error('Error del servidor al rechazar la solicitud:', error.response.data);
+      } else {
+        console.error('Error inesperado al rechazar la solicitud:', error);
+      }
     }
   };
 
