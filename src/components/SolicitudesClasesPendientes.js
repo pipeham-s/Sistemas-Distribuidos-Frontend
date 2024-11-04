@@ -93,21 +93,6 @@ const RedButton = styled.button`
   }
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: #333;
-  cursor: pointer;
-
-  &:hover {
-    color: #000;
-  }
-`;
-
 const customStyles = {
   content: {
     position: 'fixed',
@@ -193,8 +178,22 @@ const SolicitudesClasesPendientes = () => {
   useEffect(() => {
     // Función para obtener las solicitudes pendientes del backend
     const fetchSolicitudes = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token no disponible');
+        return;
+      }
+
+      let decodedToken;
       try {
-        const response = await axios.get('http://localhost:8080/api/solicitud-clase/pendientes/profesor12345678');
+        decodedToken = JSON.parse(atob(token.split('.')[1]));
+      } catch (e) {
+        console.error('Error al decodificar el token:', e);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`http://localhost:8080/api/solicitud-clase/pendientes/profesor${decodedToken.cedula}`);
         setSolicitudes(response.data);
       } catch (error) {
         console.error('Error al obtener las solicitudes de clases pendientes:', error);
@@ -203,12 +202,6 @@ const SolicitudesClasesPendientes = () => {
 
     // Llamar a la función por primera vez
     fetchSolicitudes();
-
-    // Configurar el intervalo para actualizar cada 5 segundos
-    const interval = setInterval(fetchSolicitudes, 5000);
-
-    // Limpiar el intervalo cuando el componente se desmonte
-    return () => clearInterval(interval);
   }, []);
 
   const abrirModal = () => {
@@ -222,13 +215,8 @@ const SolicitudesClasesPendientes = () => {
   // Función para aceptar solicitud
   const aceptarSolicitud = async (id) => {
     try {
-      // Hacer la solicitud al backend para aprobar la solicitud de clase
       await axios.post(`http://localhost:8080/api/solicitud-clase/aprobar/${id}`);
-      
-      // Actualizar la lista de solicitudes eliminando la que ha sido aprobada
       setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== id));
-
-      console.log(`Solicitud con ID ${id} aprobada exitosamente.`);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
     }
@@ -258,7 +246,6 @@ const SolicitudesClasesPendientes = () => {
         style={customStyles}
         ariaHideApp={false}
       >
-        <CloseButton onClick={cerrarModal}>×</CloseButton>
         {solicitudes.length > 0 ? (
           <TablaSolicitudes>
             <TablaWrapper>
@@ -274,9 +261,9 @@ const SolicitudesClasesPendientes = () => {
                 <tbody>
                   {solicitudes.map((solicitud, index) => (
                     <TablaRow key={index}>
-                      <TablaCell>{solicitud.materia?.nombre || 'Materia no disponible'}</TablaCell>
-                      <TablaCell>{solicitud.alumno ? `${solicitud.alumno.nombre} ${solicitud.alumno.apellido}` : 'Alumno no disponible'}</TablaCell>
-                      <TablaCell>{solicitud.fechaSolicitud ? new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') : 'Fecha no disponible'}</TablaCell>
+                      <TablaCell>{solicitud.materia.nombre}</TablaCell>
+                      <TablaCell>{solicitud.alumno.nombre + ' ' + solicitud.alumno.apellido}</TablaCell>
+                      <TablaCell>{new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES')}</TablaCell>
                       <TablaCell>
                         <GreenButton onClick={() => aceptarSolicitud(solicitud.id)}>Aceptar</GreenButton>
                         <RedButton onClick={() => rechazarSolicitud(solicitud.id)}>Rechazar</RedButton>
@@ -290,6 +277,7 @@ const SolicitudesClasesPendientes = () => {
         ) : (
           <p style={{ textAlign: 'center', color: '#666' }}>No hay solicitudes pendientes.</p>
         )}
+        <GreenButton onClick={cerrarModal}>Cerrar</GreenButton>
       </Modal>
     </Box>
   );

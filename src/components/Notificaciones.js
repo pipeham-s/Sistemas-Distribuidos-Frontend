@@ -112,50 +112,46 @@ const Notificaciones = () => {
       return;
     }
 
+    let decodedToken;
     try {
-      let decodedToken;
-      try {
-        decodedToken = JSON.parse(atob(token.split('.')[1]));
-      } catch (e) {
-        console.error('Error al decodificar el token:', e);
-        return;
-      }
+      decodedToken = JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      console.error('Error al decodificar el token:', e);
+      return;
+    }
 
-      const cedula = decodedToken?.cedula;
-      if (!cedula) {
-        console.error('Cédula no encontrada en el token');
-        return;
-      }
+    const cedula = decodedToken?.cedula;
+    if (!cedula) {
+      console.error('Cédula no encontrada en el token');
+      return;
+    }
 
-      try {
-        const responseMateria = await axios.get(
-          `http://localhost:8080/api/solicitud-materia/pendientes/${cedula}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setSolicitudesMateria(responseMateria.data);
-      } catch (error) {
-        console.error('Error al obtener solicitudes de materia:', error);
-      }
-
-      try {
-        const responseClase = await axios.get(
-          `http://localhost:8080/api/solicitud-clase/pendientes/${cedula}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setSolicitudesClase(responseClase.data);
-      } catch (error) {
-        console.error('Error al obtener solicitudes de clase:', error);
-      }
+    try {
+      const responseMateria = await axios.get(
+        `http://localhost:8080/api/solicitud-materia/pendientes/${cedula}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSolicitudesMateria(responseMateria.data);
     } catch (error) {
-      console.error('Error general al obtener solicitudes:', error);
+      console.error('Error al obtener solicitudes de materia:', error);
+    }
+
+    try {
+      const responseClase = await axios.get(
+        `http://localhost:8080/api/solicitud-clase/pendientes${cedula}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSolicitudesClase(responseClase.data);
+    } catch (error) {
+      console.error('Error al obtener solicitudes de clase:', error);
     }
   };
 
