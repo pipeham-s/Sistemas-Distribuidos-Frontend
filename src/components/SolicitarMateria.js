@@ -134,13 +134,13 @@ const SolicitarMateria = () => {
   };
 
   const enviarSolicitud = async () => {
-    const userString = localStorage.getItem('user');
-    console.log("Contenido de 'user' en local storage:", userString);
+    //const userString = localStorage.getItem('user');
+    //console.log("Contenido de 'user' en local storage:", userString);
 
-    const parsedUserString = JSON.parse(userString);
-    const user = JSON.parse(parsedUserString.value);
+    //const parsedUserString = JSON.parse(userString);
+    //const user = JSON.parse(parsedUserString.value);
 
-    console.log('Objeto user parseado:', user);
+    //console.log('Objeto user parseado:', user);
 
     const cedulaUsuario = localStorage.getItem('cedula');
 
