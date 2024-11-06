@@ -6,6 +6,7 @@ import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { jwtDecode } from 'jwt-decode';
 
 // Animación fadeIn similar al primer componente
 const fadeIn = keyframes`
@@ -132,8 +133,7 @@ const SolicitarClase = () => {
   const [profesores, setProfesores] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
-  useEffect(() => {
-    // Obtener las clases del backend (que corresponden a las materias)
+  
     const fetchClases = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/materias/todas');
@@ -143,10 +143,9 @@ const SolicitarClase = () => {
       }
     };
 
-    fetchClases();
-  }, []);
 
   useEffect(() => {
+    fetchClases();
     if (selectedClase) {
       // Obtener los profesores para la materia seleccionada
       const fetchProfesores = async () => {
@@ -186,17 +185,7 @@ const SolicitarClase = () => {
       return;
     }
 
-    // Decodificar el payload del token para obtener la cédula del alumno
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join('')
-    );
-
-    const payload = JSON.parse(jsonPayload);
+    const payload = jwtDecode(token);
     const cedulaAlumno = payload.cedula;
 
     if (!cedulaAlumno) {
@@ -291,8 +280,9 @@ const SolicitarClase = () => {
                   (profesor) => profesor.nombreCompleto === e.target.value
                 );
                 setSelectedProfesor(e.target.value);
-                setSelectedProfesorCedula(selected?.cedula || '');
+                setSelectedProfesorCedula(selected ? selected.cedula : '');
               }}
+              
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               disabled={!profesores.length}
             >

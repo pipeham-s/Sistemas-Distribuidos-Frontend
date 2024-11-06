@@ -128,14 +128,16 @@ const Notificaciones = () => {
 
     try {
       const responseMateria = await axios.get(
-        `http://localhost:8080/api/solicitud-materia/pendientes/${cedula}`,
+        `http://localhost:8080/api/solicitud-materia/pendientes`, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setSolicitudesMateria(responseMateria.data);
+      const todasSolicitudes = responseMateria.data;
+      const solicitudesUsuario = todasSolicitudes.filter((solicitud) => solicitud.alumno.cedula === cedula);
+      setSolicitudesMateria(solicitudesUsuario);
     } catch (error) {
       console.error('Error al obtener solicitudes de materia:', error);
     }
