@@ -294,7 +294,7 @@ const SolicitudesClasesPendientes = () => {
                 </TablaHeader>
                 <tbody>
                   {solicitudes.map((solicitud, index) => (
-                    <TablaRow key={index}>
+                    <TablaRow key={index} classname='overflow-y-scroll'>
                       <TablaCell>{solicitud.materia.nombre}</TablaCell>
                       <TablaCell>{solicitud.alumno.nombre + ' ' + solicitud.alumno.apellido}</TablaCell>
                       <TablaCell>{new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES')}</TablaCell>

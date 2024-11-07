@@ -143,20 +143,30 @@ const SolicitarClase = () => {
       }
     };
 
+    const fetchProfesores = async () => {
+      try {
+        const cedula = localStorage.getItem('cedula');
+        const response = await axios.get(`http://localhost:8080/api/alumnos/por-materia?nombreMateria=${selectedClase}`, {
+          //pasar la cedula como parametro
+          params: {
+            cedula: cedula,
+          },
+        }
+        );
+        
+        // Filtrar que los que tengan la cedula del localstorage no aparezcan (usuario actual)
+        setProfesores(response.data);
+        console.log('Profesores:', response.data);
+      } catch (error) {
+        console.error('Error al obtener los profesores:', error);
+      }
+    };
+
 
   useEffect(() => {
     fetchClases();
     if (selectedClase) {
       // Obtener los profesores para la materia seleccionada
-      const fetchProfesores = async () => {
-        try {
-          const response = await axios.get(`http://localhost:8080/api/alumnos/por-materia?nombreMateria=${selectedClase}`);
-          setProfesores(response.data);
-        } catch (error) {
-          console.error('Error al obtener los profesores:', error);
-        }
-      };
-
       fetchProfesores();
     } else {
       setProfesores([]);
@@ -174,6 +184,16 @@ const SolicitarClase = () => {
       cedulaProfesor: selectedProfesorCedula,
       fecha: selectedDate,
     });
+
+    if (!selectedClase || !selectedProfesor || !selectedProfesorCedula || !selectedDate) {
+      alert('Por favor complete todos los campos.');
+      return;
+    }
+
+    if (selectedDate < new Date()) {
+      alert('La fecha seleccionada debe ser a futuro.');
+      return; 
+    }
     enviarSolicitud();
   };
 
@@ -234,6 +254,15 @@ const SolicitarClase = () => {
       setSelectedDate(null);
     }
   };
+
+  const handleFecha = (date) => {
+    //chequear que sea a futuro
+    if (date < new Date()) {
+      alert('La fecha seleccionada debe ser a futuro');
+      return;
+    }
+    setSelectedDate(date);
+  }
 
   return (
     <Box>
