@@ -104,7 +104,7 @@ const Login = () => {
         } else if (error.response.status === 401) {
           setMensaje('Contraseña incorrecta');
         } else {
-          setMensaje('Error en el sistema, intenta más tarde');
+          setMensaje('Usuario o contraseña incorrectos');
         }
       } else {
         setMensaje('Error en la conexión con el servidor');

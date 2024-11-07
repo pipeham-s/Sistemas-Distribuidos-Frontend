@@ -93,7 +93,7 @@ const Notificaciones = () => {
   const [solicitudesMateria, setSolicitudesMateria] = useState([]);
   const [solicitudesClase, setSolicitudesClase] = useState([]);
   const [filtroMateria, setFiltroMateria] = useState('TODOS');
-  const [filtroClase, setFiltroClase] = useState('TODOS');
+  const [filtroClase, setFiltroClase] = useState('PENDIENTE');
   const [token, setToken] = useState(null);
 
   useEffect(() => {
@@ -209,7 +209,7 @@ const Notificaciones = () => {
             <option value="TODOS">Todos</option>
             <option value="PENDIENTE">Pendiente</option>
             <option value="RECHAZADA">Rechazada</option>
-            <option value="ACEPTADA">Aceptada</option>
+            <option value="APROBADA">Aprobada</option>
           </FiltroSelect>
           <TablaContainer>
             <Tabla>
