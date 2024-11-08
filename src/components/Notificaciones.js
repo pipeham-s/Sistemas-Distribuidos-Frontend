@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 const NotificacionesContainer = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 20px;
   height: 100%;
   overflow: hidden;
@@ -16,7 +17,7 @@ const NotificacionesContainer = styled.div`
 const TablaNotificacionesWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 100%;
   height: auto;
   box-sizing: border-box;
 `;
@@ -92,6 +93,8 @@ const FiltroSelect = styled.select`
 const Notificaciones = () => {
   const [solicitudesMateria, setSolicitudesMateria] = useState([]);
   const [solicitudesClase, setSolicitudesClase] = useState([]);
+  const [clasesAlumno, setClasesAlumno] = useState([]);
+  const [clasesProfesor, setClasesProfesor] = useState([]);
   const [filtroMateria, setFiltroMateria] = useState('TODOS');
   const [filtroClase, setFiltroClase] = useState('PENDIENTE');
   const [token, setToken] = useState(null);
@@ -101,6 +104,7 @@ const Notificaciones = () => {
     if (savedToken) {
       setToken(savedToken);
       obtenerSolicitudesPendientes(savedToken);
+      obtenerClases(savedToken);
     } else {
       console.error('Token no encontrado en localStorage');
     }
@@ -157,6 +161,52 @@ const Notificaciones = () => {
     }
   };
 
+  const obtenerClases = async (token) => {
+    let decodedToken;
+    try {
+      decodedToken = JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      console.error('Error al decodificar el token:', e);
+      return;
+    }
+
+    const cedula = decodedToken?.cedula;
+    if (!cedula) {
+      console.error('Cédula no encontrada en el token');
+      return;
+    }
+
+    try {
+      const responseAlumno = await axios.get(
+        `http://localhost:8080/api/clases/clasesAlumno/${cedula}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const clasesAlumnoData = responseAlumno.data.filter((clase) => new Date(clase.fecha) > new Date());
+      setClasesAlumno(clasesAlumnoData);
+    } catch (error) {
+      console.error('Error al obtener clases del alumno:', error);
+    }
+
+    try {
+      const responseProfesor = await axios.get(
+        `http://localhost:8080/api/clases/clasesProfesor/${cedula}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const clasesProfesorData = responseProfesor.data.filter((clase) => new Date(clase.fecha) > new Date());
+      setClasesProfesor(clasesProfesorData);
+    } catch (error) {
+      console.error('Error al obtener clases del profesor:', error);
+    }
+  };
+
   const filtrarSolicitudes = (solicitudes, filtro) => {
     if (filtro === 'TODOS') return solicitudes;
     return solicitudes.filter((solicitud) => solicitud.estado === filtro);
@@ -167,13 +217,8 @@ const Notificaciones = () => {
       {/* Sección para las solicitudes de materia */}
       <TablaNotificacionesWrapper>
         <TablaNotificaciones>
-          <TablaTitulo>Mis Solicitudes de Materia</TablaTitulo>
-          <FiltroSelect value={filtroMateria} onChange={(e) => setFiltroMateria(e.target.value)}>
-            <option value="TODOS">Todos</option>
-            <option value="PENDIENTE">Pendiente</option>
-            <option value="RECHAZADA">Rechazada</option>
-            <option value="APROBADA">Aprobada</option>
-          </FiltroSelect>
+          <TablaTitulo>Mis Solicitudes de Materia Pendientes</TablaTitulo>
+          
           <TablaContainer>
             <Tabla>
               <thead>
@@ -204,7 +249,7 @@ const Notificaciones = () => {
       {/* Sección para las solicitudes de clase */}
       <TablaNotificacionesWrapper>
         <TablaNotificaciones>
-          <TablaTitulo>Mis Solicitudes de Clase</TablaTitulo>
+          <TablaTitulo>Mis Solicitudes de Clase como Alumno</TablaTitulo>
           <FiltroSelect value={filtroClase} onChange={(e) => setFiltroClase(e.target.value)}>
             <option value="TODOS">Todos</option>
             <option value="PENDIENTE">Pendiente</option>
@@ -252,6 +297,80 @@ const Notificaciones = () => {
                 ) : (
                   <tr>
                     <TablaCelda colSpan="4">No tienes solicitudes de clase pendientes.</TablaCelda>
+                  </tr>
+                )}
+              </tbody>
+            </Tabla>
+          </TablaContainer>
+        </TablaNotificaciones>
+      </TablaNotificacionesWrapper>
+
+      {/* Sección para las clases futuras como alumno */}
+      <TablaNotificacionesWrapper>
+        <TablaNotificaciones>
+          <TablaTitulo>Mis Clases Futuras como Alumno</TablaTitulo>
+          <TablaContainer>
+            <Tabla>
+              <thead>
+                <tr>
+                  <TablaEncabezado>Materia</TablaEncabezado>
+                  <TablaEncabezado>Profesor</TablaEncabezado>
+                  <TablaEncabezado>Fecha de la clase</TablaEncabezado>
+                </tr>
+              </thead>
+              <tbody>
+                {clasesAlumno.length > 0 ? (
+                  clasesAlumno.map((clase) => (
+                    <TablaFila key={clase.id}>
+                      <TablaCelda>{clase.materia?.nombre || 'No disponible'}</TablaCelda>
+                      <TablaCelda>{`${clase.profesor?.nombre} ${clase.profesor?.apellido}` || 'No disponible'}</TablaCelda>
+                      <TablaCelda>{new Date(clase.fecha).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      }) || 'No disponible'}</TablaCelda>
+                    </TablaFila>
+                  ))
+                ) : (
+                  <tr>
+                    <TablaCelda colSpan="3">No tienes clases futuras como alumno.</TablaCelda>
+                  </tr>
+                )}
+              </tbody>
+            </Tabla>
+          </TablaContainer>
+        </TablaNotificaciones>
+      </TablaNotificacionesWrapper>
+
+      {/* Sección para las clases futuras como profesor */}
+      <TablaNotificacionesWrapper>
+        <TablaNotificaciones>
+          <TablaTitulo>Mis Clases Futuras como Profesor</TablaTitulo>
+          <TablaContainer>
+            <Tabla>
+              <thead>
+                <tr>
+                  <TablaEncabezado>Materia</TablaEncabezado>
+                  <TablaEncabezado>Alumno</TablaEncabezado>
+                  <TablaEncabezado>Fecha de la clase</TablaEncabezado>
+                </tr>
+              </thead>
+              <tbody>
+                {clasesProfesor.length > 0 ? (
+                  clasesProfesor.map((clase) => (
+                    <TablaFila key={clase.id}>
+                      <TablaCelda>{clase.materia?.nombre || 'No disponible'}</TablaCelda>
+                      <TablaCelda>{`${clase.alumno?.nombre} ${clase.alumno?.apellido}` || 'No disponible'}</TablaCelda>
+                      <TablaCelda>{new Date(clase.fecha).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      }) || 'No disponible'}</TablaCelda>
+                    </TablaFila>
+                  ))
+                ) : (
+                  <tr>
+                    <TablaCelda colSpan="3">No tienes clases futuras como profesor.</TablaCelda>
                   </tr>
                 )}
               </tbody>

@@ -269,7 +269,7 @@ const SolicitudesClasesPendientes = () => {
   return (
     <Box>
       <HeaderStyled>
-        <StyledTitle>Solicitudes de Clases Pendientes</StyledTitle>
+        <StyledTitle>Alumnos que quieren mis servicios</StyledTitle>
         <GreenButton onClick={abrirModal}>Ver mis solicitudes</GreenButton>
       </HeaderStyled>
 

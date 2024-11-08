@@ -78,7 +78,7 @@ const MisClases = () => {
 
   return (
     <Box>
-      <StyledTitle>Mis Clases</StyledTitle>
+      <StyledTitle>Calendario</StyledTitle>
       <GreenButton onClick={handleNavigate} style={{ alignSelf: 'center' }}>Ver Mis Clases</GreenButton>
     </Box>
   );
