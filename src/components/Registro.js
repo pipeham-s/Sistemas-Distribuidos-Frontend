@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom'; // Importar Link desde react-router-dom
 import axios from 'axios';
+import Alerta from './Alerta';
 
 // Contenedor principal del formulario con color verde agua y opacidad al 95%
 const FormContainer = styled.div`
@@ -85,6 +86,9 @@ const RegisterForm = () => {
     aceptaTerminos: false,
   });
 
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('');
+
   const navigate = useNavigate(); // Crear instancia del hook para navegación
 
   const handleChange = (e) => {
@@ -99,7 +103,8 @@ const RegisterForm = () => {
     e.preventDefault();
   
     if (formData.contrasena !== formData.repetirContrasena) {
-      alert('Las contraseñas no coinciden');
+      setAlertMessage('Las contraseñas no coinciden');
+      setAlertType('Atencion');
       return;
     }
   
@@ -110,6 +115,42 @@ const RegisterForm = () => {
       correo: formData.correo,
       password: formData.contrasena  // Usar 'password' como lo espera el backend
     };
+
+    //que ningun campo sea vacio
+    if (!usuario.nombre || !usuario.apellido || !usuario.cedula || !usuario.correo || !usuario.password) {
+      setAlertMessage('Todos los campos son obligatorios');
+      setAlertType('Atencion');
+      return;
+    }
+
+    //el nombre y el apellido deben tener al menos 3 caracteres y solamente letras, - y espacio
+    if (!/^[a-zA-Z\s-]{3,}$/.test(usuario.nombre) || !/^[a-zA-Z\s-]{3,}$/.test(usuario.apellido)) {
+      setAlertMessage('Nombre o apellido inválido');
+      setAlertType('Atencion');
+      return;
+    }
+
+    //la cedula debe tener 8 digitos
+    if (!/^\d{8}$/.test(usuario.cedula)) {
+      setAlertMessage('Cédula inválida');
+      setAlertType('Atencion');
+      return;
+    }
+
+    //el correo debe tener un formato válido
+    if (!/^\S+@\S+\.\S+$/.test(usuario.correo)) {
+      setAlertMessage('Correo inválido');
+      setAlertType('Atencion');
+      return;
+    }
+
+    //debe aceptar los terminos y condiciones
+    if (!formData.aceptaTerminos) {
+      setAlertMessage('Debe aceptar los términos y condiciones');
+      setAlertType('Atencion');
+      return;
+    }
+
   
     try {
       // Ajustar el endpoint para que coincida con el backend
@@ -121,7 +162,8 @@ const RegisterForm = () => {
       navigate('/login'); // Redirigir a la página de inicio de sesión
     } catch (error) {
       console.error('Error al crear el usuario:', error);
-      alert('Hubo un error al registrar el usuario');
+      setAlertMessage('Error al crear el usuario');
+      setAlertType('Error');
     }
   };
   
@@ -190,6 +232,9 @@ const RegisterForm = () => {
             Acepto los <StyledLink to="#">términos y condiciones</StyledLink>
           </Label>
         </CheckboxContainer>
+        
+        <Alerta message={alertMessage} type={alertType} />
+
         <Button type="submit">Registrarse</Button>
       </form>
       <StyledLink to="/">Ya tengo una cuenta</StyledLink>
