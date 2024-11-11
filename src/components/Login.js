@@ -81,12 +81,12 @@ const Login = () => {
 
         setMensaje('Inicio de sesión exitoso');
         
-        const decodedToken = jwtDecode(token); // Usando jwtDecode
+        const decodedToken = jwtDecode(token); 
         const role = decodedToken.role;
         const cedula = decodedToken.cedula;
         console.log("cedula: " + cedula)
         localStorage.setItem('cedula', cedula);
-        console.log(role)// Asegúrate de que el rol se llama "role" en tu token
+        console.log(role)
 
         // Redirigir basado en el rol del usuario
         if (role === 'ADMIN') {
