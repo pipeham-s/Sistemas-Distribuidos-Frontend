@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import logo from '../images/logo verde.png'; // Asegúrate de que la ruta del logo sea correcta
+import logo from '../images/logo verde.png'; 
 
-// Definir el contenedor principal del Header
 const HeaderContainer = styled.header`
   display: flex;
   align-items: center;

@@ -23,7 +23,7 @@ function Input({ placeholder, type, className, value, onChange, width, minWidth,
       onChange={onChange}
       placeholder={placeholder}
       style={{ minWidth: minWidth, minHeight: minHeight }}
-      multiple={multiple}  // Añadir esta línea para soportar múltiples archivos
+      multiple={multiple}  
     />
   );
 }
@@ -41,7 +41,7 @@ Input.propTypes = {
   minWidth: PropTypes.string,
   height: PropTypes.oneOf(['fill', 'fixed', 'hug']),
   minHeight: PropTypes.string,
-  multiple: PropTypes.bool  // Añadir esta línea para la propiedad múltiple
+  multiple: PropTypes.bool 
 };
 
 Input.defaultProps = {
@@ -54,7 +54,7 @@ Input.defaultProps = {
   minWidth: '0',
   height: 'fixed',
   minHeight: '0',
-  multiple: false  // Añadir esta línea para la propiedad múltiple
+  multiple: false 
 };
 
 export default Input;

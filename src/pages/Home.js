@@ -1,5 +1,3 @@
-// src/pages/Home.js
-
 import React from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header';
@@ -10,7 +8,6 @@ import Notificaciones from '../components/Notificaciones';
 import SolicitudesClasesPendientes from '../components/SolicitudesClasesPendientes';
 import backgroundImage from '../images/universidad.jpg';
 
-// Contenedor de la página
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -25,7 +22,7 @@ const PageContainer = styled.div`
   box-sizing: border-box;
 `;
 
-// Contenedor principal que divide la pantalla en dos columnas
+//2 columnas
 const MainContent = styled.div`
   display: flex;
   justify-content: center;
@@ -37,7 +34,7 @@ const MainContent = styled.div`
   flex-wrap: wrap;
 `;
 
-// Sección izquierda para el componente de notificaciones
+//notificaciones
 const LeftSection = styled.div`
   flex: 1;
   max-width: 40%;
@@ -45,7 +42,6 @@ const LeftSection = styled.div`
   margin-top: 60px;
 `;
 
-// Sección derecha para los botones de acciones
 const RightSection = styled.div`
   flex: 1;
   max-width: 40%;
@@ -62,12 +58,12 @@ const Home = () => {
     <PageContainer>
       <Header />
       <MainContent>
-        {/* Sección izquierda con el componente de notificaciones */}
+        {/* a la izquierda el componente de notificaciones */}
         <LeftSection>
           <Notificaciones />
         </LeftSection>
 
-        {/* Sección derecha con los botones de acciones */}
+        {/* a la derecha los botones de acciones */}
         <RightSection>
           <SolicitarMateria />
           <SolicitarClase />

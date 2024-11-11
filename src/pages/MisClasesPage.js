@@ -1,11 +1,9 @@
-// src/pages/MisClasesPage.js
-
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction'; // Permite la interacción con eventos
+import interactionPlugin from '@fullcalendar/interaction';
 import backgroundImage from '../images/universidad.jpg';
 import './calendarStyles.css';
 import axios from 'axios';
@@ -122,7 +120,7 @@ const MisClasesPage = () => {
         return;
       }
 
-      const cedula = decodedToken.cedula; // Asumiendo que la cédula está presente en el token decodificado
+      const cedula = decodedToken.cedula;
       console.log('Cédula decodificada:', cedula);
 
       if (!cedula) {
@@ -130,7 +128,7 @@ const MisClasesPage = () => {
         return;
       }
 
-      // Llamar al backend para obtener las clases del alumno
+      //obtener las clases del alumno
       axios.get(`http://localhost:8080/api/clases/clasesAlumno/${cedula}`)
         .then(responseAlumno => {
           const clasesAlumno = responseAlumno.data;
@@ -143,7 +141,7 @@ const MisClasesPage = () => {
               profesorNombre: `${clase.profesor.nombre} ${clase.profesor.apellido}`,
               profesorCorreo: clase.profesor.correo,
             },
-            backgroundColor: '#2e7d32', // Color para eventos del alumno
+            backgroundColor: '#2e7d32', //color  eventos del alumno
           }));
           setEventsAlumno(eventosAlumno);
         })
@@ -151,7 +149,7 @@ const MisClasesPage = () => {
           console.error('Error al obtener las clases del alumno:', error);
         });
 
-      // Llamar al backend para obtener las clases del profesor
+      //obtener las clases del profesor
       axios.get(`http://localhost:8080/api/clases/clasesProfesor/${cedula}`)
         .then(responseProfesor => {
           const clasesProfesor = responseProfesor.data;
@@ -159,12 +157,12 @@ const MisClasesPage = () => {
           const eventosProfesor = clasesProfesor.map(clase => ({
             title: clase.materia.nombre,
             date: clase.fecha,
-            allDay: true, // Para que ocupe todo el ancho del día
+            allDay: true,
             extendedProps: {
               alumnoNombre: `${clase.alumno.nombre} ${clase.alumno.apellido}`,
               alumnoCorreo: clase.alumno.correo,
             },
-            backgroundColor: '#1e88e5', // Color para eventos del profesor
+            backgroundColor: '#1e88e5', //color eventos del profesor
           }));
           setEventsProfesor(eventosProfesor);
         })
@@ -193,7 +191,7 @@ const MisClasesPage = () => {
       html: detailsHtml,
       confirmButtonText: 'Cerrar',
       confirmButtonColor: '#2e7d32',
-      backdrop: false, // Desactiva el deszoom de la pantalla
+      backdrop: false,
     });
   };
 
@@ -216,9 +214,9 @@ const MisClasesPage = () => {
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
             events={[...eventsAlumno, ...eventsProfesor]}
-            selectable={false} // Deshabilitar la selección de celdas
-            editable={false} // No permitir editar eventos existentes
-            eventClick={handleEventClick} // Mostrar detalles de la clase al hacer clic en un evento
+            selectable={false} 
+            editable={false} 
+            eventClick={handleEventClick} //detalles de la clase al hacer clic en un evento
             eventContent={(eventInfo) => (
               eventInfo.event.extendedProps.profesorNombre ?
                 <StyledEventProfesor>{eventInfo.event.title}</StyledEventProfesor> :

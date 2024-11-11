@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import Login from '../components/Login';
-import Header from '../components/Header'; // Header se importa aquí y se usa solo una vez
-import backgroundImage from '../images/universidad.jpg'; // Ruta correcta a la imagen de fondo
+import Header from '../components/Header'; 
+import backgroundImage from '../images/universidad.jpg'; 
 
 // Contenedor principal de la página con el fondo de la imagen
 const PageContainer = styled.div`
@@ -21,7 +21,6 @@ const PageContainer = styled.div`
   overflow: hidden; /* Evita que aparezcan scrolls */
 `;
 
-// Contenedor para centrar el Login
 const LoginBox = styled.div`
   background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
   padding: 2rem;
@@ -40,7 +39,7 @@ const LoginBox = styled.div`
 const LoginPage = () => {
   return (
     <PageContainer>
-      <Header /> {/* Renderiza el header solo una vez */}
+      <Header />
     
            <Login />
       

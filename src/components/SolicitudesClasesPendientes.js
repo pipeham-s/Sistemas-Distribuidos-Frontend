@@ -3,7 +3,6 @@ import Modal from 'react-modal';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 
-// Animación fadeIn para la lista de solicitudes
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -13,7 +12,6 @@ const fadeIn = keyframes`
   }
 `;
 
-// Estilo del contenedor principal
 const Box = styled.div`
   background: linear-gradient(135deg, #ffffff, #e0e0e0);
   border-radius: 20px;
@@ -174,7 +172,7 @@ const SolicitudesClasesPendientes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Función para obtener las solicitudes pendientes del backend
+    //obtener las solicitudes pendientes del backend
     const fetchSolicitudes = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -202,7 +200,6 @@ const SolicitudesClasesPendientes = () => {
       }
     };
 
-    // Llamar a la función por primera vez
     fetchSolicitudes();
   }, []);
 
@@ -214,7 +211,7 @@ const SolicitudesClasesPendientes = () => {
     setIsModalOpen(false);
   };
 
-  // Función para aceptar solicitud
+  //aceptar solicitud
   const aceptarSolicitud = async (id) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -240,7 +237,7 @@ const SolicitudesClasesPendientes = () => {
     }
   };
 
-  // Función para rechazar solicitud
+  //rechazar solicitud
   const rechazarSolicitud = async (id) => {
     const token = localStorage.getItem('token');
     if (!token) {

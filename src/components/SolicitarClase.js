@@ -1,5 +1,3 @@
-// src/components/SolicitarClase.js
-
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import styled, { keyframes } from 'styled-components';
@@ -8,7 +6,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { jwtDecode } from 'jwt-decode';
 
-// Animación fadeIn similar al primer componente
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -18,7 +15,6 @@ const fadeIn = keyframes`
   }
 `;
 
-// Estilo del contenedor principal
 const Box = styled.div`
   background: linear-gradient(135deg, #ffffff, #e0e0e0);
   border-radius: 20px;
@@ -55,7 +51,6 @@ const StyledTitle = styled.h2`
   text-align: center;
 `;
 
-// Botón estilizado similar a SolicitarClase
 const GreenButton = styled.button`
   padding: 12px 24px;
   border: none;
@@ -147,14 +142,13 @@ const SolicitarClase = () => {
       try {
         const cedula = localStorage.getItem('cedula');
         const response = await axios.get(`http://localhost:8080/api/alumnos/por-materia?nombreMateria=${selectedClase}`, {
-          //pasar la cedula como parametro
           params: {
             cedula: cedula,
           },
         }
         );
         
-        // Filtrar que los que tengan la cedula del localstorage no aparezcan (usuario actual)
+        //filtrar que los que tengan la cedula del localstorage no aparezcan (usuario actual)
         setProfesores(response.data);
         console.log('Profesores:', response.data);
       } catch (error) {
@@ -166,7 +160,6 @@ const SolicitarClase = () => {
   useEffect(() => {
     fetchClases();
     if (selectedClase) {
-      // Obtener los profesores para la materia seleccionada
       fetchProfesores();
     } else {
       setProfesores([]);
@@ -198,7 +191,6 @@ const SolicitarClase = () => {
   };
 
   const enviarSolicitud = async () => {
-    // Obtener el token almacenado (suponiendo que está en localStorage)
     const token = localStorage.getItem('token');
     if (!token) {
       alert('Error: No se encontró el token de autenticación.');
@@ -213,7 +205,6 @@ const SolicitarClase = () => {
       return;
     }
 
-    // Crear el objeto de solicitud
     const solicitudPayload = {
       nombreMateria: selectedClase.trim(),
       cedulaProfesor: selectedProfesorCedula,

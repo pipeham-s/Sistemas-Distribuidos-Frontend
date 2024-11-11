@@ -1,5 +1,3 @@
-// src/components/Notificaciones.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -22,7 +20,6 @@ const TablaNotificacionesWrapper = styled.div`
   box-sizing: border-box;
 `;
 
-// Estilo para las tablas de notificaciones
 const TablaNotificaciones = styled.div`
   background: rgba(255, 255, 255, 0.9);
   padding: 15px;

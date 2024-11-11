@@ -1,10 +1,8 @@
-// src/pages/RegisterPage.js
-
 import React from 'react';
 import styled from 'styled-components';
 import backgroundImage from '../images/fondoprofesor.jpg';
 import Registro from '../components/Registro'
-import Header from '../components/Header'; // Asegúrate de que Header esté correctamente importado
+import Header from '../components/Header';
 
 const PageContainer = styled.div`
   display: flex;
@@ -68,7 +66,7 @@ const RegisterPage = () => {
   return (
     <PageContainer>
       <Header />
-      <Registro /> {/* Componente de formulario de registro */}
+      <Registro />
     </PageContainer>
   );
 };

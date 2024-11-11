@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom'; // Importar Link desde react-router-dom
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Alerta from './Alerta';
 
-// Contenedor principal del formulario con color verde agua y opacidad al 95%
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -64,7 +63,6 @@ const Button = styled.button`
   }
 `;
 
-// Cambiar Link a StyledLink para utilizar react-router-dom
 const StyledLink = styled(Link)`
   color: #6C3B2A;
   margin-top: 15px;
@@ -89,8 +87,7 @@ const RegisterForm = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('');
 
-  const navigate = useNavigate(); // Crear instancia del hook para navegación
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -113,7 +110,7 @@ const RegisterForm = () => {
       apellido: formData.apellido,
       cedula: formData.cedula,
       correo: formData.correo,
-      password: formData.contrasena  // Usar 'password' como lo espera el backend
+      password: formData.contrasena
     };
 
     //que ningun campo sea vacio
@@ -153,13 +150,12 @@ const RegisterForm = () => {
 
   
     try {
-      // Ajustar el endpoint para que coincida con el backend
+      
       const response = await axios.post('http://localhost:8080/auth/register', usuario);
       console.log('Respuesta del servidor:', response.data);
   
-      // Si el registro es exitoso, mostrar mensaje y redirigir al login
       alert('Usuario creado exitosamente');
-      navigate('/login'); // Redirigir a la página de inicio de sesión
+      navigate('/login');
     } catch (error) {
       console.error('Error al crear el usuario:', error);
       setAlertMessage('Error al crear el usuario');

@@ -1,10 +1,7 @@
-// src/components/MisClases.js
-
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-// Animación fadeIn similar al primer componente
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -14,7 +11,6 @@ const fadeIn = keyframes`
   }
 `;
 
-// Estilo del contenedor principal
 const Box = styled.div`
   background: linear-gradient(135deg, #ffffff, #e0e0e0);
   border-radius: 20px;
@@ -49,7 +45,6 @@ const StyledTitle = styled.h2`
   text-align: center;
 `;
 
-// Botón estilizado similar a SolicitarClase
 const GreenButton = styled.button`
   padding: 12px 24px;
   border: none;

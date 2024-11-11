@@ -1,12 +1,9 @@
-// src/context/UserContext.js
 import React, { createContext, useState, useEffect } from 'react';
-import axios from '../axiosConfig'; // Adjust the path based on your project structure
+import axios from '../axiosConfig';
 
-// Create the context
 export const UserContext = createContext();
 
 
-// sessionUtils.js o en un archivo de contexto
 export const setItemWithExpiry = (key, value, expiryTime) => {
   const now = new Date();
 
@@ -18,12 +15,12 @@ export const setItemWithExpiry = (key, value, expiryTime) => {
 };
 
 
-// Create the provider component
+//componente proveedor
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check for token and user on component mount
+  //chequear si el usuario ya ha iniciado sesión
   useEffect(() => {
     const unparsedStoredUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
@@ -36,7 +33,7 @@ export const UserProvider = ({ children }) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       } catch (error) {
         console.error('Error parsing user data from localStorage:', error);
-        // If parsing fails, clear the corrupted data
+        //si hay un error al parsear el usuario, limpiar la sesión
         localStorage.removeItem('user');
         setUser(null);
         setIsAuthenticated(false);
@@ -44,7 +41,7 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  // Logout function to clear session
+  //función para cerrar sesión
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);

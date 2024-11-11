@@ -1,11 +1,8 @@
-// src/components/SolicitarMateria.js
-
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 
-// Animación fadeIn similar al primer componente
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -15,7 +12,6 @@ const fadeIn = keyframes`
   }
 `;
 
-// Estilo del contenedor principal
 const Box = styled.div`
   background: linear-gradient(135deg, #ffffff, #e0e0e0);
   border-radius: 20px;
@@ -52,7 +48,6 @@ const StyledTitle = styled.h2`
   text-align: center;
 `;
 
-// Botón estilizado similar a SolicitarClase
 const GreenButton = styled.button`
   padding: 12px 24px;
   border: none;
@@ -111,7 +106,7 @@ const SolicitarMateria = () => {
   const [materias, setMaterias] = useState([]);
 
   useEffect(() => {
-    // Obtener las materias del backend
+    //obtener las materias del backend
     const fetchMaterias = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/materias/todas');
@@ -134,13 +129,6 @@ const SolicitarMateria = () => {
   };
 
   const enviarSolicitud = async () => {
-    //const userString = localStorage.getItem('user');
-    //console.log("Contenido de 'user' en local storage:", userString);
-
-    //const parsedUserString = JSON.parse(userString);
-    //const user = JSON.parse(parsedUserString.value);
-
-    //console.log('Objeto user parseado:', user);
 
     const cedulaUsuario = localStorage.getItem('cedula');
 

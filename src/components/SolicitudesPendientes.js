@@ -126,7 +126,7 @@ const SolicitudesPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
 
   useEffect(() => {
-    // Llamada al backend para obtener las solicitudes pendientes
+    //obtener las solicitudes pendientes
     axios.get('http://localhost:8080/api/solicitud-materia/pendientes')
       .then(response => {
         setSolicitudes(response.data);
@@ -136,7 +136,7 @@ const SolicitudesPendientes = () => {
       });
   }, []);
 
-  // Funciones para aceptar o rechazar una solicitud
+  //aceptar o rechazar una solicitud
   const aceptarSolicitud = (id) => {
     axios.post(`http://localhost:8080/api/solicitud-materia/aprobar/${id}`)
       .then(response => {
