@@ -3,13 +3,15 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import styled from 'styled-components';
 
-// Estilos básicos
+// Estilos ajustados para ocupar toda la pantalla
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  height: 100vh; /* Ocupa toda la altura de la ventana */
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
 `;
 
 const ConversationList = styled.div`
@@ -17,7 +19,8 @@ const ConversationList = styled.div`
   margin-right: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 80vh; /* Limita el tamaño de la lista de conversaciones */
 `;
 
 const ConversationItem = styled.div`
@@ -39,13 +42,13 @@ const ChatContainer = styled.div`
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
+  height: 80vh; /* Ocupa el 80% de la altura de la ventana para ajustarse a la pantalla */
 `;
 
 const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
   padding: 10px;
-  margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #fefefe;
@@ -63,6 +66,7 @@ const Message = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
+  padding-top: 10px;
 `;
 
 const Input = styled.input`
@@ -93,6 +97,7 @@ const ChatApp = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [userId, setUserId] = useState(null);
+  const [receiverId, setReceiverId] = useState(''); // Para el ID del receptor
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -141,10 +146,8 @@ const ChatApp = () => {
             console.log('Mensajes recibidos:', parsedMessages);
 
             if (Array.isArray(parsedMessages)) {
-              // Si se recibe un array de mensajes, lo usamos directamente
               setMessages(parsedMessages);
             } else if (selectedConversation && parsedMessages.conversationId === selectedConversation.contactId) {
-              // Si es un solo mensaje, lo añadimos al estado
               setMessages((prevMessages) => [...prevMessages, parsedMessages]);
             }
           } catch (error) {
@@ -202,7 +205,7 @@ const ChatApp = () => {
   return (
     <Container>
       <h2>Chat App</h2>
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', height: '100%' }}>
         <ConversationList>
           <h3>Conversaciones</h3>
           {conversations.length > 0 ? (
@@ -213,7 +216,7 @@ const ChatApp = () => {
                 onClick={() => {
                   console.log('Conversación seleccionada:', conv);
                   setSelectedConversation(conv);
-                  setMessages([]); // Limpia los mensajes antes de cargar los nuevos
+                  setMessages([]); // Limpiar mensajes antes de cargar los nuevos
                 }}
               >
                 {conv.contactName}
