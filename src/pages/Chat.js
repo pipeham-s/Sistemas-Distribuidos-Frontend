@@ -3,11 +3,11 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import styled from 'styled-components';
 
-// Estilos ajustados para ocupar toda la pantalla
+// Componentes estilizados
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Ocupa toda la altura de la ventana */
+  height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -20,7 +20,7 @@ const ConversationList = styled.div`
   border: 1px solid #ddd;
   border-radius: 5px;
   overflow-y: auto;
-  max-height: 80vh; /* Limita el tamaño de la lista de conversaciones */
+  max-height: 80vh;
 `;
 
 const ConversationItem = styled.div`
@@ -42,7 +42,7 @@ const ChatContainer = styled.div`
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
-  height: 80vh; /* Ocupa el 80% de la altura de la ventana para ajustarse a la pantalla */
+  height: 80vh;
 `;
 
 const MessagesContainer = styled.div`
@@ -57,9 +57,9 @@ const MessagesContainer = styled.div`
 const Message = styled.div`
   margin-bottom: 10px;
   padding: 10px;
-  background-color: ${props => (props.isSender ? '#d4f8e8' : '#f1f1f1')};
+  background-color: ${props => (props.$isSender ? '#d4f8e8' : '#f1f1f1')};
   border-radius: 8px;
-  align-self: ${props => (props.isSender ? 'flex-end' : 'flex-start')};
+  align-self: ${props => (props.$isSender ? 'flex-end' : 'flex-start')};
   max-width: 70%;
   word-wrap: break-word;
 `;
@@ -97,7 +97,8 @@ const ChatApp = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [userId, setUserId] = useState(null);
-  const [receiverId, setReceiverId] = useState(''); // Para el ID del receptor
+  const [userName, setUserName] = useState('');
+  const [receiverId, setReceiverId] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -109,17 +110,19 @@ const ChatApp = () => {
     let decodedToken;
     try {
       decodedToken = JSON.parse(atob(token.split('.')[1]));
-      setUserId(decodedToken.id);
+      if (decodedToken?.id) {
+        setUserId(decodedToken.id);
+        setUserName(decodedToken.nombre); // Suponiendo que el token tiene el nombre del usuario
+      } else {
+        console.error('ID de usuario no encontrado');
+        return;
+      }
     } catch (error) {
       console.error('Error al decodificar el token:', error);
       return;
     }
 
-    if (!decodedToken.id) {
-      console.error('ID de usuario no encontrado');
-      return;
-    }
-
+    // Conexión WebSocket
     const socket = new SockJS('http://localhost:8080/chat-websocket');
     const client = Stomp.over(socket);
 
@@ -130,6 +133,7 @@ const ChatApp = () => {
         setStompClient(client);
         setIsConnected(true);
 
+        // Suscribirse para recibir las conversaciones del usuario
         client.subscribe(`/user/queue/conversations`, (message) => {
           try {
             const parsedConversations = JSON.parse(message.body);
@@ -140,21 +144,25 @@ const ChatApp = () => {
           }
         });
 
+        // Suscribirse para recibir mensajes en tiempo real
         client.subscribe(`/user/queue/messages`, (message) => {
           try {
-            const parsedMessages = JSON.parse(message.body);
-            console.log('Mensajes recibidos:', parsedMessages);
+            const parsedMessage = JSON.parse(message.body);
+            console.log('Mensaje en tiempo real recibido:', parsedMessage);
 
-            if (Array.isArray(parsedMessages)) {
-              setMessages(parsedMessages);
-            } else if (selectedConversation && parsedMessages.conversationId === selectedConversation.contactId) {
-              setMessages((prevMessages) => [...prevMessages, parsedMessages]);
+            // Agregar el mensaje si pertenece a la conversación seleccionada
+            if (
+              selectedConversation &&
+              parsedMessage.conversationId === selectedConversation.conversationId
+            ) {
+              setMessages((prevMessages) => [...prevMessages, parsedMessage]);
             }
           } catch (error) {
-            console.error('Error al parsear los mensajes:', error);
+            console.error('Error al parsear el mensaje:', error);
           }
         });
 
+        // Obtener las conversaciones del usuario
         client.send('/app/get-conversations', {}, decodedToken.id.toString());
       },
       (error) => {
@@ -172,33 +180,68 @@ const ChatApp = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (selectedConversation && stompClient && isConnected) {
-      console.log('Cargando mensajes antiguos para la conversación:', selectedConversation);
-      stompClient.send('/app/get-messages', {}, selectedConversation.contactId.toString());
-    }
-  }, [selectedConversation, stompClient, isConnected]);
+  // Manejar selección de conversación
+  const handleSelectConversation = async (conversation) => {
+    console.log('Cargando mensajes antiguos para la conversación:', conversation);
+    setSelectedConversation(conversation);
 
+    // Hacer una solicitud GET para obtener los mensajes antiguos
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/conversations/${conversation.conversationId}/messages`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Error al obtener los mensajes antiguos');
+      }
+
+      const data = await response.json();
+      console.log('Mensajes obtenidos:', data);
+      setMessages(data);
+    } catch (error) {
+      console.error('Error al obtener los mensajes antiguos:', error);
+    }
+  };
+
+  // Enviar mensaje nuevo
   const sendMessage = () => {
     if (stompClient && isConnected && input.trim() && selectedConversation) {
       const message = {
         content: input.trim(),
         senderId: userId,
         receiverId: selectedConversation.contactId,
+        conversationId: selectedConversation.conversationId,
+        senderName: userName, // Usar el nombre del usuario que envía el mensaje
       };
 
       console.log('Enviando mensaje:', message);
       stompClient.send('/app/send', {}, JSON.stringify(message));
+      setMessages((prevMessages) => [...prevMessages, message]);
       setInput('');
-
-      const newMessage = {
-        ...message,
-        conversationId: selectedConversation.contactId,
-        senderName: 'Yo',
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
     } else {
       console.error('No se puede enviar el mensaje. El cliente STOMP no está conectado.');
+    }
+  };
+
+  // Iniciar una nueva conversación
+  const startConversation = () => {
+    if (stompClient && isConnected && receiverId.trim()) {
+      stompClient.send(
+        '/app/start-conversation',
+        {},
+        JSON.stringify({ initiatorId: userId, receiverId: parseInt(receiverId) })
+      );
+      setReceiverId('');
+    } else {
+      console.error('No se puede iniciar la conversación. El cliente STOMP no está conectado.');
     }
   };
 
@@ -211,13 +254,9 @@ const ChatApp = () => {
           {conversations.length > 0 ? (
             conversations.map((conv) => (
               <ConversationItem
-                key={conv.contactId}
-                selected={selectedConversation && selectedConversation.contactId === conv.contactId}
-                onClick={() => {
-                  console.log('Conversación seleccionada:', conv);
-                  setSelectedConversation(conv);
-                  setMessages([]); // Limpiar mensajes antes de cargar los nuevos
-                }}
+                key={conv.conversationId}
+                selected={selectedConversation?.conversationId === conv.conversationId}
+                onClick={() => handleSelectConversation(conv)}
               >
                 {conv.contactName}
               </ConversationItem>
@@ -231,9 +270,8 @@ const ChatApp = () => {
           <MessagesContainer>
             {selectedConversation ? (
               messages.map((msg, index) => (
-                <Message key={index} isSender={msg.senderId === userId}>
-                  <strong>{msg.senderName}:</strong>
-                  <span>{msg.content}</span>
+                <Message key={index} $isSender={msg.senderId === userId}>
+                  <strong>{msg.senderId === userId ? 'Yo' : msg.senderName}:</strong> <span>{msg.content}</span>
                 </Message>
               ))
             ) : (
@@ -254,6 +292,16 @@ const ChatApp = () => {
             </InputContainer>
           )}
         </ChatContainer>
+      </div>
+
+      <div style={{ marginTop: '20px' }}>
+        <input
+          type="text"
+          placeholder="ID del usuario para iniciar conversación"
+          value={receiverId}
+          onChange={(e) => setReceiverId(e.target.value)}
+        />
+        <Button onClick={startConversation}>Iniciar Conversación</Button>
       </div>
     </Container>
   );
